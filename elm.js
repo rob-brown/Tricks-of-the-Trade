@@ -8924,7 +8924,16 @@ var _user$project$Menu$tabView = F3(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$html$Html_Events$onClick(
-					_user$project$Menu$SelectItem(index))
+					_user$project$Menu$SelectItem(index)),
+					_elm_lang$html$Html_Attributes$classList(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							{
+							ctor: '_Tuple2',
+							_0: 'selected',
+							_1: _elm_lang$core$Native_Utils.eq(selected, index)
+						}
+						]))
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[

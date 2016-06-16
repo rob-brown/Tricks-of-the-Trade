@@ -1,4 +1,8 @@
-module Page exposing (..)
+module Page exposing
+  ( Model
+  , decode
+  , view
+  )
 
 import Json.Decode as Json
 import Markdown

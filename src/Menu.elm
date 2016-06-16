@@ -95,7 +95,11 @@ tabs model =
 
 tabView : Int -> Int -> MenuItem -> Html Msg
 tabView selected index item =
-  li [onClick (SelectItem index)] [text (tabTitle item)]
+  li
+    [ onClick (SelectItem index)
+    , classList [("selected", selected == index)]
+    ]
+    [text (tabTitle item)]
 
 tabTitle : MenuItem -> String
 tabTitle item =
