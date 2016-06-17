@@ -78,13 +78,12 @@ update action model =
 
 view : Model -> Html Msg
 view model =
-  let
-    tabViews =
-      [li [id "site-title"] [text "Tricks of the Trade"]]
-      ++ (List.indexedMap (tabView model.current) (tabs model))
+  let tabViews = (List.indexedMap (tabView model.current) (tabs model))
   in
     div []
-      [ header [] [div [id "menu"] [ul [] tabViews]]
+      [ header []
+        [ div [id "site-title"] [h1 [] [text "Tricks of the Trade"]]
+        , div [id "menu"] [ul [] tabViews]]
       , div [id "main"] [content model]
       ]
 

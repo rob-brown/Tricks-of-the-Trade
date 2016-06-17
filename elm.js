@@ -9272,24 +9272,9 @@ var _user$project$Menu$tabView = F3(
 	});
 var _user$project$Menu$view = function (model) {
 	var tabViews = A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$li,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$id('site-title')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Tricks of the Trade')
-					]))
-			]),
-		A2(
-			_elm_lang$core$List$indexedMap,
-			_user$project$Menu$tabView(model.current),
-			_user$project$Menu$tabs(model)));
+		_elm_lang$core$List$indexedMap,
+		_user$project$Menu$tabView(model.current),
+		_user$project$Menu$tabs(model));
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -9302,6 +9287,23 @@ var _user$project$Menu$view = function (model) {
 					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$id('site-title')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$h1,
+								_elm_lang$core$Native_List.fromArray(
+									[]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Tricks of the Trade')
+									]))
+							])),
 						A2(
 						_elm_lang$html$Html$div,
 						_elm_lang$core$Native_List.fromArray(

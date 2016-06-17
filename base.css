@@ -3,7 +3,7 @@ body {
 }
 
 .container {
-  background-color: #eeeeee;
+  background-color: #eee;
 }
 
 .logo {
@@ -48,26 +48,32 @@ body {
   background-color: #ddd;
 }
 
-#site-title {
-  font-weight: bold;
+#site-title h1 {
+  font-family: "Arial Black", sans-serif;
+  text-align: center;
+  background-color: #003865;
+  color: #ddd;
+  padding: 10px 20px 10px 20px;
+  margin: 0;
 }
 
 #menu {
   background-color: #003865;
-  margin: 0 0 0 0;
+  margin: 0;
   height: 41px;
 }
 
 #menu ul {
   list-style: none;
-  padding: 0 0 0 0;
+  margin: 0;
+  padding: 0;
 }
 
 #menu ul li {
   border-color: #005498;
   display: inline-block;
   padding: 10px 20px 10px 20px;
-  color: #dddddd;
+  color: #ddd;
 }
 
 #menu ul li.menu-item:hover {
