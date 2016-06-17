@@ -1,3 +1,7 @@
+body {
+  font-family: "Arial", sans-serif;
+}
+
 .container {
   background-color: #eeeeee;
 }
@@ -20,6 +24,34 @@
   border-top: 1px solid #e5e5e5;
 }
 
+.book-title {
+  /*font-family: "Arial Black", sans-serif;*/
+}
+
+.book-subtitle {
+
+}
+
+.book-author {
+
+}
+
+.book-review, .post-body {
+  font-family: Palatino, serif;
+}
+
+.post-title, .post-summary {
+  font-family: "Arial", sans-serif;
+}
+
+.post-entry:hover, .review-entry:hover {
+  background-color: #ddd;
+}
+
+#site-title {
+  font-weight: bold;
+}
+
 #menu {
   background-color: #003865;
   margin: 0 0 0 0;
@@ -28,6 +60,7 @@
 
 #menu ul {
   list-style: none;
+  padding: 0 0 0 0;
 }
 
 #menu ul li {
@@ -37,7 +70,7 @@
   color: #dddddd;
 }
 
-#menu ul li:hover {
+#menu ul li.menu-item:hover {
   background-color: #005498;
 }
 

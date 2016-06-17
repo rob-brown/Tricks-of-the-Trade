@@ -8,6 +8,7 @@ module Menu exposing
   )
 
 import Html exposing (..)
+import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Page
@@ -63,7 +64,10 @@ update action model =
 
 view : Model -> Html Msg
 view model =
-  let tabViews = List.indexedMap (tabView model.current) (tabs model)
+  let
+    tabViews =
+      [li [id "site-title"] [text "Tricks of the Trade"]]
+      ++ (List.indexedMap (tabView model.current) (tabs model))
   in
     div []
       [ header [] [div [id "menu"] [ul [] tabViews]]
@@ -83,9 +87,9 @@ contentView : MenuItem -> Html Msg
 contentView item =
   case item of
     BlogPosts posts ->
-      BlogPostList.view posts
+      App.map UpdateBlog (BlogPostList.view posts)
     BookReviews reviews ->
-      BookReviewList.view reviews
+      App.map UpdateBookReviews (BookReviewList.view reviews)
     Other page ->
       Page.view page
 
@@ -97,7 +101,7 @@ tabView : Int -> Int -> MenuItem -> Html Msg
 tabView selected index item =
   li
     [ onClick (SelectItem index)
-    , classList [("selected", selected == index)]
+    , classList [("menu-item", True), ("selected", selected == index)]
     ]
     [text (tabTitle item)]
 

@@ -17,7 +17,7 @@ type alias Model =
   , title: String
   , summary: Maybe String
   , entry: String
-  , data: String  -- Ex. "2016-06-12T10:18-06:00"
+  , date: String  -- Ex. "2016-06-12T10:18-06:00"
   -- , images: List String
   }
 
@@ -35,15 +35,15 @@ decode =
 
 compactView : Model -> Html a
 compactView model =
-  div []
+  div [class "compact-post"]
     [ h3 [class "post-title"] [text model.title]
     , h5 [class "post-summary"] [Markdown.toHtml [] (Maybe.withDefault "" model.summary)]
     ]
 
 fullView : Model -> Html a
 fullView model =
-  div []
+  div [class "full-post"]
     [ h3 [class "post-title"] [text model.title]
     , h5 [class "post-summary"] [Markdown.toHtml [] (Maybe.withDefault "" model.summary)]
-    , Markdown.toHtml [class "post-entry"] model.entry
+    , Markdown.toHtml [class "post-body"] model.entry
     ]

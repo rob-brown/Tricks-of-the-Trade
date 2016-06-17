@@ -35,16 +35,14 @@ decode =
 
 compactView : Model -> Html a
 compactView model =
-  div []
+  div [class "compact-review"]
     [ h3 [class "book-title"] [text model.title]
-    , h4 [class "book-subtitle"] [text (Maybe.withDefault "" model.subtitle)]
     , h5 [class "book-author"] [text ("by " ++ model.author)]
-    , Markdown.toHtml [class "book-review"] model.review
     ]
 
 fullView : Model -> Html a
 fullView model =
-  div []
+  div [class "full-review"]
     [ h3 [class "book-title"] [text model.title]
     , h4 [class "book-subtitle"] [text (Maybe.withDefault "" model.subtitle)]
     , h5 [class "book-author"] [text ("by " ++ model.author)]

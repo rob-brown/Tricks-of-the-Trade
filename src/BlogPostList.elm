@@ -15,26 +15,21 @@ import Http
 import Task
 import BlogPost
 import ContentfulAPI
-
-main =
-  App.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+import MockData
 
 -- MODEL
 
 type alias Model =
   { posts: List BlogPost.Model
+  , selected: Maybe BlogPost.Model
   , error: Maybe Http.Error
   }
 
 init : (Model, Cmd Msg)
 init =
   let
-    model = { posts = [], error = Nothing }
+    posts = MockData.blogPosts
+    model = { posts=posts, selected=Nothing, error=Nothing }
     command = Cmd.map Content (ContentfulAPI.fetchBlogPosts 0)
   in
     (model, command)
@@ -43,10 +38,16 @@ init =
 
 type Msg
   = Content ContentfulAPI.Msg
+  | SelectPost BlogPost.Model
+  | DeselectPost
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
+    SelectPost post ->
+      ({ model | selected=Just post }, Cmd.none)
+    DeselectPost ->
+      ({ model | selected=Nothing }, Cmd.none)
     Content subaction ->
       case subaction of
         ContentfulAPI.FetchBookReviews reviews ->
@@ -58,21 +59,38 @@ update action model =
 
 -- VIEW
 
--- view : Model -> Html Msg
-view : Model -> Html a
+view : Model -> Html Msg
 view model =
+  case model.selected of
+    Just post ->
+      viewOne post
+    Nothing ->
+      viewMany model.posts
+
+viewOne : BlogPost.Model -> Html Msg
+viewOne post =
   div []
-    [ h1 [] [text "Blog"]
-    , content model
+    [ button [class "back-button", onClick DeselectPost] [text "Back to all posts"]
+    , BlogPost.fullView post
     ]
 
--- content : Model -> Html Msg
-content : Model -> Html a
-content model =
-  if List.isEmpty model.posts then
+viewMany : List BlogPost.Model -> Html Msg
+viewMany posts =
+  div [class "post-list"]
+    [ h1 [] [text "Blog"]
+    , content posts
+    ]
+
+content : List BlogPost.Model -> Html Msg
+content posts =
+  if List.isEmpty posts then
     text "Loading Blog Posts"
   else
-    div [] (List.map BlogPost.fullView model.posts)
+    div [] (List.map postEntry posts)
+
+postEntry : BlogPost.Model -> Html Msg
+postEntry post =
+  p [class "post-entry", onClick (SelectPost post)] [BlogPost.compactView post]
 
 -- SUBSCRIPTION
 

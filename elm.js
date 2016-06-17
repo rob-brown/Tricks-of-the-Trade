@@ -8169,7 +8169,9 @@ var _user$project$BlogPost$fullView = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('full-post')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -8200,7 +8202,7 @@ var _user$project$BlogPost$fullView = function (model) {
 				_evancz$elm_markdown$Markdown$toHtml,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('post-entry')
+						_elm_lang$html$Html_Attributes$class('post-body')
 					]),
 				model.entry)
 			]));
@@ -8209,7 +8211,9 @@ var _user$project$BlogPost$compactView = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('compact-post')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -8240,7 +8244,7 @@ var _user$project$BlogPost$compactView = function (model) {
 };
 var _user$project$BlogPost$Model = F5(
 	function (a, b, c, d, e) {
-		return {id: a, title: b, summary: c, entry: d, data: e};
+		return {id: a, title: b, summary: c, entry: d, date: e};
 	});
 var _user$project$BlogPost$decode = A6(
 	_elm_lang$core$Json_Decode$object5,
@@ -8415,7 +8419,9 @@ var _user$project$BookReview$fullView = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('full-review')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -8463,7 +8469,9 @@ var _user$project$BookReview$compactView = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('compact-review')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -8477,17 +8485,6 @@ var _user$project$BookReview$compactView = function (model) {
 						_elm_lang$html$Html$text(model.title)
 					])),
 				A2(
-				_elm_lang$html$Html$h4,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('book-subtitle')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(
-						A2(_elm_lang$core$Maybe$withDefault, '', model.subtitle))
-					])),
-				A2(
 				_elm_lang$html$Html$h5,
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -8497,14 +8494,7 @@ var _user$project$BookReview$compactView = function (model) {
 					[
 						_elm_lang$html$Html$text(
 						A2(_elm_lang$core$Basics_ops['++'], 'by ', model.author))
-					])),
-				A2(
-				_evancz$elm_markdown$Markdown$toHtml,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('book-review')
-					]),
-				model.review)
+					]))
 			]));
 };
 var _user$project$BookReview$Model = F6(
@@ -8583,21 +8573,234 @@ var _user$project$ContentfulAPI$fetchBookReviews = function (page) {
 		A2(_evancz$elm_http$Http$get, decoder, url));
 };
 
+var _user$project$MockData$bookReviews = _elm_lang$core$Native_List.fromArray(
+	[
+		A6(
+		_user$project$BookReview$Model,
+		'1',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.'),
+		A6(
+		_user$project$BookReview$Model,
+		'2',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.'),
+		A6(
+		_user$project$BookReview$Model,
+		'3',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.'),
+		A6(
+		_user$project$BookReview$Model,
+		'4',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.'),
+		A6(
+		_user$project$BookReview$Model,
+		'5',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.'),
+		A6(
+		_user$project$BookReview$Model,
+		'6',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.'),
+		A6(
+		_user$project$BookReview$Model,
+		'7',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.'),
+		A6(
+		_user$project$BookReview$Model,
+		'8',
+		'Some Book',
+		_elm_lang$core$Maybe$Just('A witty subtitle'),
+		'Billy Bob',
+		'http://www.amazon.com',
+		'This is a great book; read it.')
+	]);
+var _user$project$MockData$blogPosts = _elm_lang$core$Native_List.fromArray(
+	[
+		A5(
+		_user$project$BlogPost$Model,
+		'1',
+		'Blog Post 1',
+		_elm_lang$core$Maybe$Just('Just a test'),
+		'This is a test, it is only a test.',
+		'2016-06-12T10:18-06:00'),
+		A5(
+		_user$project$BlogPost$Model,
+		'2',
+		'Blog Post 2',
+		_elm_lang$core$Maybe$Just('Just a test'),
+		'This is a test, it is only a test.',
+		'2016-06-12T10:18-06:00'),
+		A5(
+		_user$project$BlogPost$Model,
+		'3',
+		'Blog Post 3',
+		_elm_lang$core$Maybe$Just('Just a test'),
+		'This is a test, it is only a test.',
+		'2016-06-12T10:18-06:00'),
+		A5(
+		_user$project$BlogPost$Model,
+		'4',
+		'Blog Post 4',
+		_elm_lang$core$Maybe$Just('Just a test'),
+		'This is a test, it is only a test.',
+		'2016-06-12T10:18-06:00'),
+		A5(
+		_user$project$BlogPost$Model,
+		'5',
+		'Blog Post 5',
+		_elm_lang$core$Maybe$Just('Just a test'),
+		'This is a test, it is only a test.',
+		'2016-06-12T10:18-06:00'),
+		A5(
+		_user$project$BlogPost$Model,
+		'6',
+		'Blog Post 6',
+		_elm_lang$core$Maybe$Just('Just a test'),
+		'This is a test, it is only a test.',
+		'2016-06-12T10:18-06:00'),
+		A5(
+		_user$project$BlogPost$Model,
+		'7',
+		'Blog Post 7',
+		_elm_lang$core$Maybe$Just('Just a test'),
+		'This is a test, it is only a test.',
+		'2016-06-12T10:18-06:00')
+	]);
+
 var _user$project$BlogPostList$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$BlogPostList$content = function (model) {
-	return _elm_lang$core$List$isEmpty(model.posts) ? _elm_lang$html$Html$text('Loading Blog Posts') : A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		A2(_elm_lang$core$List$map, _user$project$BlogPost$fullView, model.posts));
-};
-var _user$project$BlogPostList$view = function (model) {
+var _user$project$BlogPostList$update = F2(
+	function (action, model) {
+		var _p0 = action;
+		switch (_p0.ctor) {
+			case 'SelectPost':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selected: _elm_lang$core$Maybe$Just(_p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeselectPost':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{selected: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var _p1 = _p0._0;
+				switch (_p1.ctor) {
+					case 'FetchBookReviews':
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					case 'FetchBlogPosts':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{posts: _p1._0}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					default:
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									error: _elm_lang$core$Maybe$Just(_p1._0)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+				}
+		}
+	});
+var _user$project$BlogPostList$Model = F3(
+	function (a, b, c) {
+		return {posts: a, selected: b, error: c};
+	});
+var _user$project$BlogPostList$DeselectPost = {ctor: 'DeselectPost'};
+var _user$project$BlogPostList$viewOne = function (post) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('back-button'),
+						_elm_lang$html$Html_Events$onClick(_user$project$BlogPostList$DeselectPost)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Back to all posts')
+					])),
+				_user$project$BlogPost$fullView(post)
+			]));
+};
+var _user$project$BlogPostList$SelectPost = function (a) {
+	return {ctor: 'SelectPost', _0: a};
+};
+var _user$project$BlogPostList$postEntry = function (post) {
+	return A2(
+		_elm_lang$html$Html$p,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('post-entry'),
+				_elm_lang$html$Html_Events$onClick(
+				_user$project$BlogPostList$SelectPost(post))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$BlogPost$compactView(post)
+			]));
+};
+var _user$project$BlogPostList$content = function (posts) {
+	return _elm_lang$core$List$isEmpty(posts) ? _elm_lang$html$Html$text('Loading Blog Posts') : A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		A2(_elm_lang$core$List$map, _user$project$BlogPostList$postEntry, posts));
+};
+var _user$project$BlogPostList$viewMany = function (posts) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('post-list')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -8608,40 +8811,17 @@ var _user$project$BlogPostList$view = function (model) {
 					[
 						_elm_lang$html$Html$text('Blog')
 					])),
-				_user$project$BlogPostList$content(model)
+				_user$project$BlogPostList$content(posts)
 			]));
 };
-var _user$project$BlogPostList$update = F2(
-	function (action, model) {
-		var _p0 = action;
-		var _p1 = _p0._0;
-		switch (_p1.ctor) {
-			case 'FetchBookReviews':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'FetchBlogPosts':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{posts: _p1._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							error: _elm_lang$core$Maybe$Just(_p1._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$BlogPostList$Model = F2(
-	function (a, b) {
-		return {posts: a, error: b};
-	});
+var _user$project$BlogPostList$view = function (model) {
+	var _p2 = model.selected;
+	if (_p2.ctor === 'Just') {
+		return _user$project$BlogPostList$viewOne(_p2._0);
+	} else {
+		return _user$project$BlogPostList$viewMany(model.posts);
+	}
+};
 var _user$project$BlogPostList$Content = function (a) {
 	return {ctor: 'Content', _0: a};
 };
@@ -8650,29 +8830,113 @@ var _user$project$BlogPostList$init = function () {
 		_elm_lang$core$Platform_Cmd$map,
 		_user$project$BlogPostList$Content,
 		_user$project$ContentfulAPI$fetchBlogPosts(0));
-	var model = {
-		posts: _elm_lang$core$Native_List.fromArray(
-			[]),
-		error: _elm_lang$core$Maybe$Nothing
-	};
+	var posts = _user$project$MockData$blogPosts;
+	var model = {posts: posts, selected: _elm_lang$core$Maybe$Nothing, error: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: model, _1: command};
 }();
-var _user$project$BlogPostList$main = {
-	main: _elm_lang$html$Html_App$program(
-		{init: _user$project$BlogPostList$init, view: _user$project$BlogPostList$view, update: _user$project$BlogPostList$update, subscriptions: _user$project$BlogPostList$subscriptions})
-};
 
 var _user$project$BookReviewList$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$BookReviewList$content = function (model) {
-	return _elm_lang$core$List$isEmpty(model.reviews) ? _elm_lang$html$Html$text('Loading Reviews') : A2(
+var _user$project$BookReviewList$update = F2(
+	function (action, model) {
+		var _p0 = action;
+		switch (_p0.ctor) {
+			case 'SelectReview':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selected: _elm_lang$core$Maybe$Just(_p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeselectReview':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{selected: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var _p1 = _p0._0;
+				switch (_p1.ctor) {
+					case 'FetchBookReviews':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{reviews: _p1._0}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					case 'FetchBlogPosts':
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					default:
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									error: _elm_lang$core$Maybe$Just(_p1._0)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+				}
+		}
+	});
+var _user$project$BookReviewList$Model = F3(
+	function (a, b, c) {
+		return {reviews: a, selected: b, error: c};
+	});
+var _user$project$BookReviewList$DeselectReview = {ctor: 'DeselectReview'};
+var _user$project$BookReviewList$viewOne = function (review) {
+	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
-		A2(_elm_lang$core$List$map, _user$project$BookReview$fullView, model.reviews));
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('back-button'),
+						_elm_lang$html$Html_Events$onClick(_user$project$BookReviewList$DeselectReview)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Back to all reviews')
+					])),
+				_user$project$BookReview$fullView(review)
+			]));
 };
-var _user$project$BookReviewList$view = function (model) {
+var _user$project$BookReviewList$SelectReview = function (a) {
+	return {ctor: 'SelectReview', _0: a};
+};
+var _user$project$BookReviewList$reviewEntry = function (review) {
+	return A2(
+		_elm_lang$html$Html$p,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('review-entry'),
+				_elm_lang$html$Html_Events$onClick(
+				_user$project$BookReviewList$SelectReview(review))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$BookReview$compactView(review)
+			]));
+};
+var _user$project$BookReviewList$content = function (reviews) {
+	return _elm_lang$core$List$isEmpty(reviews) ? _elm_lang$html$Html$text('Loading Reviews') : A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		A2(_elm_lang$core$List$map, _user$project$BookReviewList$reviewEntry, reviews));
+};
+var _user$project$BookReviewList$viewMany = function (reviews) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -8687,40 +8951,17 @@ var _user$project$BookReviewList$view = function (model) {
 					[
 						_elm_lang$html$Html$text('Book Reviews')
 					])),
-				_user$project$BookReviewList$content(model)
+				_user$project$BookReviewList$content(reviews)
 			]));
 };
-var _user$project$BookReviewList$update = F2(
-	function (action, model) {
-		var _p0 = action;
-		var _p1 = _p0._0;
-		switch (_p1.ctor) {
-			case 'FetchBookReviews':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{reviews: _p1._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'FetchBlogPosts':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							error: _elm_lang$core$Maybe$Just(_p1._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$BookReviewList$Model = F2(
-	function (a, b) {
-		return {reviews: a, error: b};
-	});
+var _user$project$BookReviewList$view = function (model) {
+	var _p2 = model.selected;
+	if (_p2.ctor === 'Just') {
+		return _user$project$BookReviewList$viewOne(_p2._0);
+	} else {
+		return _user$project$BookReviewList$viewMany(model.reviews);
+	}
+};
 var _user$project$BookReviewList$Content = function (a) {
 	return {ctor: 'Content', _0: a};
 };
@@ -8729,17 +8970,10 @@ var _user$project$BookReviewList$init = function () {
 		_elm_lang$core$Platform_Cmd$map,
 		_user$project$BookReviewList$Content,
 		_user$project$ContentfulAPI$fetchBookReviews(0));
-	var model = {
-		reviews: _elm_lang$core$Native_List.fromArray(
-			[]),
-		error: _elm_lang$core$Maybe$Nothing
-	};
+	var reviews = _user$project$MockData$bookReviews;
+	var model = {reviews: reviews, selected: _elm_lang$core$Maybe$Nothing, error: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: model, _1: command};
 }();
-var _user$project$BookReviewList$main = {
-	main: _elm_lang$html$Html_App$program(
-		{init: _user$project$BookReviewList$init, view: _user$project$BookReviewList$view, update: _user$project$BookReviewList$update, subscriptions: _user$project$BookReviewList$subscriptions})
-};
 
 var _user$project$Page$view = function (model) {
 	return A2(
@@ -8809,17 +9043,6 @@ var _user$project$Menu$tabTitle = function (item) {
 			return _p0._0.title;
 	}
 };
-var _user$project$Menu$contentView = function (item) {
-	var _p1 = item;
-	switch (_p1.ctor) {
-		case 'BlogPosts':
-			return _user$project$BlogPostList$view(_p1._0);
-		case 'BookReviews':
-			return _user$project$BookReviewList$view(_p1._0);
-		default:
-			return _user$project$Page$view(_p1._0);
-	}
-};
 var _user$project$Menu$Model = F3(
 	function (a, b, c) {
 		return {posts: a, reviews: b, current: c};
@@ -8840,19 +9063,6 @@ var _user$project$Menu$tabs = function (model) {
 			_user$project$Menu$BookReviews(model.reviews)
 		]);
 };
-var _user$project$Menu$content = function (model) {
-	return A2(
-		_elm_lang$core$Maybe$withDefault,
-		_elm_lang$html$Html$text('Missing Content'),
-		A2(
-			_elm_lang$core$Maybe$map,
-			_user$project$Menu$contentView,
-			A2(
-				_elm_lang$core$Array$get,
-				model.current,
-				_elm_lang$core$Array$fromList(
-					_user$project$Menu$tabs(model)))));
-};
 var _user$project$Menu$UpdateBookReviews = function (a) {
 	return {ctor: 'UpdateBookReviews', _0: a};
 };
@@ -8860,12 +9070,12 @@ var _user$project$Menu$UpdateBlog = function (a) {
 	return {ctor: 'UpdateBlog', _0: a};
 };
 var _user$project$Menu$init = function () {
-	var _p2 = _user$project$BookReviewList$init;
-	var reviews = _p2._0;
-	var reviewsCmd = _p2._1;
-	var _p3 = _user$project$BlogPostList$init;
-	var posts = _p3._0;
-	var postsCmd = _p3._1;
+	var _p1 = _user$project$BookReviewList$init;
+	var reviews = _p1._0;
+	var reviewsCmd = _p1._1;
+	var _p2 = _user$project$BlogPostList$init;
+	var posts = _p2._0;
+	var postsCmd = _p2._1;
 	var commands = _elm_lang$core$Native_List.fromArray(
 		[
 			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBlog, postsCmd),
@@ -8880,20 +9090,20 @@ var _user$project$Menu$init = function () {
 }();
 var _user$project$Menu$update = F2(
 	function (action, model) {
-		var _p4 = action;
-		switch (_p4.ctor) {
+		var _p3 = action;
+		switch (_p3.ctor) {
 			case 'SelectItem':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{current: _p4._0}),
+						{current: _p3._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateBlog':
-				var _p5 = A2(_user$project$BlogPostList$update, _p4._0, model.posts);
-				var posts = _p5._0;
-				var command = _p5._1;
+				var _p4 = A2(_user$project$BlogPostList$update, _p3._0, model.posts);
+				var posts = _p4._0;
+				var command = _p4._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -8902,9 +9112,9 @@ var _user$project$Menu$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBlog, command)
 				};
 			default:
-				var _p6 = A2(_user$project$BookReviewList$update, _p4._0, model.reviews);
-				var reviews = _p6._0;
-				var command = _p6._1;
+				var _p5 = A2(_user$project$BookReviewList$update, _p3._0, model.reviews);
+				var reviews = _p5._0;
+				var command = _p5._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -8914,6 +9124,36 @@ var _user$project$Menu$update = F2(
 				};
 		}
 	});
+var _user$project$Menu$contentView = function (item) {
+	var _p6 = item;
+	switch (_p6.ctor) {
+		case 'BlogPosts':
+			return A2(
+				_elm_lang$html$Html_App$map,
+				_user$project$Menu$UpdateBlog,
+				_user$project$BlogPostList$view(_p6._0));
+		case 'BookReviews':
+			return A2(
+				_elm_lang$html$Html_App$map,
+				_user$project$Menu$UpdateBookReviews,
+				_user$project$BookReviewList$view(_p6._0));
+		default:
+			return _user$project$Page$view(_p6._0);
+	}
+};
+var _user$project$Menu$content = function (model) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		_elm_lang$html$Html$text('Missing Content'),
+		A2(
+			_elm_lang$core$Maybe$map,
+			_user$project$Menu$contentView,
+			A2(
+				_elm_lang$core$Array$get,
+				model.current,
+				_elm_lang$core$Array$fromList(
+					_user$project$Menu$tabs(model)))));
+};
 var _user$project$Menu$SelectItem = function (a) {
 	return {ctor: 'SelectItem', _0: a};
 };
@@ -8928,6 +9168,7 @@ var _user$project$Menu$tabView = F3(
 					_elm_lang$html$Html_Attributes$classList(
 					_elm_lang$core$Native_List.fromArray(
 						[
+							{ctor: '_Tuple2', _0: 'menu-item', _1: true},
 							{
 							ctor: '_Tuple2',
 							_0: 'selected',
@@ -8943,9 +9184,24 @@ var _user$project$Menu$tabView = F3(
 	});
 var _user$project$Menu$view = function (model) {
 	var tabViews = A2(
-		_elm_lang$core$List$indexedMap,
-		_user$project$Menu$tabView(model.current),
-		_user$project$Menu$tabs(model));
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$li,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$id('site-title')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Tricks of the Trade')
+					]))
+			]),
+		A2(
+			_elm_lang$core$List$indexedMap,
+			_user$project$Menu$tabView(model.current),
+			_user$project$Menu$tabs(model)));
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(

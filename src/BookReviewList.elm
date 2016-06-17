@@ -1,7 +1,6 @@
 module BookReviewList exposing
   ( Model
   , Msg
-  , main
   , init
   , view
   , update
@@ -16,26 +15,21 @@ import Http
 import Task
 import BookReview
 import ContentfulAPI
-
-main =
-  App.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+import MockData
 
 -- MODEL
 
 type alias Model =
   { reviews: List BookReview.Model
+  , selected: Maybe BookReview.Model
   , error: Maybe Http.Error
   }
 
 init : (Model, Cmd Msg)
 init =
   let
-    model = { reviews = [], error = Nothing }
+    reviews = MockData.bookReviews
+    model = { reviews=reviews, selected=Nothing, error=Nothing }
     command = Cmd.map Content (ContentfulAPI.fetchBookReviews 0)
   in
     (model, command)
@@ -44,10 +38,16 @@ init =
 
 type Msg
   = Content ContentfulAPI.Msg
+  | SelectReview BookReview.Model
+  | DeselectReview
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
+    SelectReview review ->
+      ({ model | selected=Just review }, Cmd.none)
+    DeselectReview ->
+      ({ model | selected=Nothing }, Cmd.none)
     Content subaction ->
       case subaction of
         ContentfulAPI.FetchBookReviews reviews ->
@@ -59,22 +59,38 @@ update action model =
 
 -- VIEW
 
--- view : Model -> Html Msg
-view : Model -> Html a
+view : Model -> Html Msg
 view model =
+  case model.selected of
+    Just review ->
+      viewOne review
+    Nothing ->
+      viewMany model.reviews
+
+viewOne : BookReview.Model -> Html Msg
+viewOne review =
   div []
-    [ h1 [] [text "Book Reviews"]
-    , content model
-    --, text (toString model.error)
+    [ button [class "back-button", onClick DeselectReview] [text "Back to all reviews"]
+    , BookReview.fullView review
     ]
 
--- content : Model -> Html Msg
-content : Model -> Html a
-content model =
-  if List.isEmpty model.reviews then
+viewMany : List BookReview.Model -> Html Msg
+viewMany reviews =
+  div []
+    [ h1 [] [text "Book Reviews"]
+    , content reviews
+    ]
+
+content : List BookReview.Model -> Html Msg
+content reviews =
+  if List.isEmpty reviews then
     text "Loading Reviews"
   else
-    div [] (List.map BookReview.fullView model.reviews)
+    div [] (List.map reviewEntry reviews)
+
+reviewEntry : BookReview.Model -> Html Msg
+reviewEntry review =
+  p [class "review-entry", onClick (SelectReview review)] [BookReview.compactView review]
 
 -- SUBSCRIPTION
 
