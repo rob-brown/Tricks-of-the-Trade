@@ -50,12 +50,12 @@ update action model =
       ({ model | selected=Nothing }, Cmd.none)
     Content subaction ->
       case subaction of
-        ContentfulAPI.FetchBookReviews reviews ->
-          (model, Cmd.none)
         ContentfulAPI.FetchBlogPosts posts ->
           ({ model | posts=posts }, Cmd.none)
         ContentfulAPI.FetchFail error ->
           ({ model | error=Just error }, Cmd.none)
+        _ ->
+          (model, Cmd.none)
 
 -- VIEW
 

@@ -2,6 +2,7 @@ module MockData exposing (..)
 
 import BlogPost
 import BookReview
+import Page
 
 blogPosts : List BlogPost.Model
 blogPosts =
@@ -24,4 +25,10 @@ bookReviews =
   , BookReview.Model "6" "Some Book" (Just "A witty subtitle") "Billy Bob" "http://www.amazon.com" "This is a great book; read it."
   , BookReview.Model "7" "Some Book" (Just "A witty subtitle") "Billy Bob" "http://www.amazon.com" "This is a great book; read it."
   , BookReview.Model "8" "Some Book" (Just "A witty subtitle") "Billy Bob" "http://www.amazon.com" "This is a great book; read it."
+  ]
+
+pages : List Page.Model
+pages =
+  [ Page.Model "1" "About Me" "A page about me." 1
+  , Page.Model "2" "Hire Me" "Hire me for my ideal job." 2
   ]

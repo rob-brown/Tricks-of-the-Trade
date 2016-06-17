@@ -1,5 +1,5 @@
 module ContentfulEndpoint exposing
-  ( Endpoint(BookReviews, OneBookReview, BlogPosts, OneBlogPost)
+  ( Endpoint(BookReviews, OneBookReview, BlogPosts, OneBlogPost, Pages, OnePage)
   , ID
   , Page
   , url
@@ -15,6 +15,8 @@ type Endpoint
   | OneBookReview ID Page
   | BlogPosts Page
   | OneBlogPost ID Page
+  | Pages Page
+  | OnePage ID Page
 
 url : Endpoint -> String
 url endpoint =
@@ -68,6 +70,22 @@ urlInfo endpoint =
         ( Uri.path ["spaces", spaceID, "entries", id]
         , [( "access_token", accessToken)
            , ("content_type", "blogPost")
+           , ("limit", limit)
+           , ("skip", (toString page))
+           ]
+        )
+      Pages page ->
+        ( Uri.path ["spaces", spaceID, "entries"]
+        , [( "access_token", accessToken)
+           , ("content_type", "page")
+           , ("limit", limit)
+           , ("skip", (toString page))
+           ]
+        )
+      OnePage id page ->
+        ( Uri.path ["spaces", spaceID, "entries", id]
+        , [( "access_token", accessToken)
+           , ("content_type", "page")
            , ("limit", limit)
            , ("skip", (toString page))
            ]

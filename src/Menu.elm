@@ -11,10 +11,12 @@ import Html exposing (..)
 import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Array exposing (Array)
 import Page
 import BookReviewList
 import BlogPostList
-import Array exposing (Array)
+import ContentfulAPI
+import MockData
 
 -- MODEL
 
@@ -26,6 +28,7 @@ type MenuItem
 type alias Model =
   { posts: BlogPostList.Model
   , reviews: BookReviewList.Model
+  , pages: List Page.Model
   , current: Int
   }
 
@@ -34,8 +37,12 @@ init =
   let
     (posts, postsCmd) = BlogPostList.init
     (reviews, reviewsCmd) = BookReviewList.init
-    commands = [Cmd.map UpdateBlog postsCmd, Cmd.map UpdateBookReviews reviewsCmd]
-    model = { posts=posts, reviews=reviews, current=0 }
+    model = { posts=posts, reviews=reviews, pages=MockData.pages, current=0 }
+    commands =
+      [ Cmd.map UpdateBlog postsCmd
+      , Cmd.map UpdateBookReviews reviewsCmd
+      , Cmd.map Content (ContentfulAPI.fetchPages 0)
+      ]
   in
     (model, Cmd.batch commands)
 
@@ -45,6 +52,7 @@ type Msg
   = SelectItem Int
   | UpdateBlog BlogPostList.Msg
   | UpdateBookReviews BookReviewList.Msg
+  | Content ContentfulAPI.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
@@ -59,6 +67,12 @@ update action model =
       let (reviews, command) = BookReviewList.update subaction model.reviews
       in
         ({ model | reviews=reviews }, Cmd.map UpdateBookReviews command)
+    Content subaction ->
+      case subaction of
+        ContentfulAPI.FetchPages pages ->
+          ({ model | pages=pages }, Cmd.none)
+        _ ->
+          (model, Cmd.none)
 
 -- VIEW
 
@@ -95,7 +109,7 @@ contentView item =
 
 tabs : Model -> List MenuItem
 tabs model =
-  [BlogPosts model.posts, BookReviews model.reviews]
+  [BlogPosts model.posts, BookReviews model.reviews] ++ List.map Other model.pages
 
 tabView : Int -> Int -> MenuItem -> Html Msg
 tabView selected index item =

@@ -52,10 +52,10 @@ update action model =
       case subaction of
         ContentfulAPI.FetchBookReviews reviews ->
           ({ model | reviews=reviews }, Cmd.none)
-        ContentfulAPI.FetchBlogPosts _ ->
-          (model, Cmd.none)
         ContentfulAPI.FetchFail error ->
           ({ model | error=Just error }, Cmd.none)
+        _ ->
+          (model, Cmd.none)
 
 -- VIEW
 

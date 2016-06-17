@@ -8372,7 +8372,7 @@ var _user$project$ContentfulEndpoint$urlInfo = function (endpoint) {
 					}
 					])
 			};
-		default:
+		case 'OneBlogPost':
 			return {
 				ctor: '_Tuple2',
 				_0: _user$project$Uri$path(
@@ -8390,6 +8390,42 @@ var _user$project$ContentfulEndpoint$urlInfo = function (endpoint) {
 					}
 					])
 			};
+		case 'Pages':
+			return {
+				ctor: '_Tuple2',
+				_0: _user$project$Uri$path(
+					_elm_lang$core$Native_List.fromArray(
+						['spaces', spaceID, 'entries'])),
+				_1: _elm_lang$core$Native_List.fromArray(
+					[
+						{ctor: '_Tuple2', _0: 'access_token', _1: accessToken},
+						{ctor: '_Tuple2', _0: 'content_type', _1: 'page'},
+						{ctor: '_Tuple2', _0: 'limit', _1: _user$project$ContentfulEndpoint$limit},
+						{
+						ctor: '_Tuple2',
+						_0: 'skip',
+						_1: _elm_lang$core$Basics$toString(_p0._0)
+					}
+					])
+			};
+		default:
+			return {
+				ctor: '_Tuple2',
+				_0: _user$project$Uri$path(
+					_elm_lang$core$Native_List.fromArray(
+						['spaces', spaceID, 'entries', _p0._0])),
+				_1: _elm_lang$core$Native_List.fromArray(
+					[
+						{ctor: '_Tuple2', _0: 'access_token', _1: accessToken},
+						{ctor: '_Tuple2', _0: 'content_type', _1: 'page'},
+						{ctor: '_Tuple2', _0: 'limit', _1: _user$project$ContentfulEndpoint$limit},
+						{
+						ctor: '_Tuple2',
+						_0: 'skip',
+						_1: _elm_lang$core$Basics$toString(_p0._1)
+					}
+					])
+			};
 	}
 };
 var _user$project$ContentfulEndpoint$host = 'cdn.contentful.com';
@@ -8399,6 +8435,13 @@ var _user$project$ContentfulEndpoint$url = function (endpoint) {
 	var params = _p1._1;
 	var accessToken = '59c5f3c65a74a97ab3f9e5fc5e27d650cc27ca2d1edc6e07347ddc8cb057d4c9';
 	return A4(_user$project$Uri$build, 'https', _user$project$ContentfulEndpoint$host, path, params);
+};
+var _user$project$ContentfulEndpoint$OnePage = F2(
+	function (a, b) {
+		return {ctor: 'OnePage', _0: a, _1: b};
+	});
+var _user$project$ContentfulEndpoint$Pages = function (a) {
+	return {ctor: 'Pages', _0: a};
 };
 var _user$project$ContentfulEndpoint$OneBlogPost = F2(
 	function (a, b) {
@@ -8535,8 +8578,79 @@ var _user$project$BookReview$decode = A7(
 			['fields', 'review']),
 		_elm_lang$core$Json_Decode$string));
 
+var _user$project$Page$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$h3,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('post-title')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(model.title)
+					])),
+				A2(
+				_evancz$elm_markdown$Markdown$toHtml,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('post-entry')
+					]),
+				model.content)
+			]));
+};
+var _user$project$Page$Model = F4(
+	function (a, b, c, d) {
+		return {id: a, title: b, content: c, order: d};
+	});
+var _user$project$Page$decode = A5(
+	_elm_lang$core$Json_Decode$object4,
+	_user$project$Page$Model,
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['sys', 'id']),
+		_elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['fields', 'title']),
+		_elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['fields', 'content']),
+		_elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['fields', 'order']),
+		_elm_lang$core$Json_Decode$int));
+
 var _user$project$ContentfulAPI$FetchFail = function (a) {
 	return {ctor: 'FetchFail', _0: a};
+};
+var _user$project$ContentfulAPI$FetchPages = function (a) {
+	return {ctor: 'FetchPages', _0: a};
+};
+var _user$project$ContentfulAPI$fetchPages = function (page) {
+	var decoder = A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['items']),
+		_elm_lang$core$Json_Decode$list(_user$project$Page$decode));
+	var url = _user$project$ContentfulEndpoint$url(
+		_user$project$ContentfulEndpoint$Pages(page));
+	return A3(
+		_elm_lang$core$Task$perform,
+		_user$project$ContentfulAPI$FetchFail,
+		_user$project$ContentfulAPI$FetchPages,
+		A2(_evancz$elm_http$Http$get, decoder, url));
 };
 var _user$project$ContentfulAPI$FetchBlogPosts = function (a) {
 	return {ctor: 'FetchBlogPosts', _0: a};
@@ -8573,6 +8687,11 @@ var _user$project$ContentfulAPI$fetchBookReviews = function (page) {
 		A2(_evancz$elm_http$Http$get, decoder, url));
 };
 
+var _user$project$MockData$pages = _elm_lang$core$Native_List.fromArray(
+	[
+		A4(_user$project$Page$Model, '1', 'About Me', 'A page about me.', 1),
+		A4(_user$project$Page$Model, '2', 'Hire Me', 'Hire me for my ideal job.', 2)
+	]);
 var _user$project$MockData$bookReviews = _elm_lang$core$Native_List.fromArray(
 	[
 		A6(
@@ -8721,8 +8840,6 @@ var _user$project$BlogPostList$update = F2(
 			default:
 				var _p1 = _p0._0;
 				switch (_p1.ctor) {
-					case 'FetchBookReviews':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					case 'FetchBlogPosts':
 						return {
 							ctor: '_Tuple2',
@@ -8731,7 +8848,7 @@ var _user$project$BlogPostList$update = F2(
 								{posts: _p1._0}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
-					default:
+					case 'FetchFail':
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
@@ -8741,6 +8858,8 @@ var _user$project$BlogPostList$update = F2(
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
+					default:
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
@@ -8871,9 +8990,7 @@ var _user$project$BookReviewList$update = F2(
 								{reviews: _p1._0}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
-					case 'FetchBlogPosts':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					default:
+					case 'FetchFail':
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
@@ -8883,6 +9000,8 @@ var _user$project$BookReviewList$update = F2(
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
+					default:
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
@@ -8975,60 +9094,6 @@ var _user$project$BookReviewList$init = function () {
 	return {ctor: '_Tuple2', _0: model, _1: command};
 }();
 
-var _user$project$Page$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$h3,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('post-title')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(model.title)
-					])),
-				A2(
-				_evancz$elm_markdown$Markdown$toHtml,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('post-entry')
-					]),
-				model.content)
-			]));
-};
-var _user$project$Page$Model = F4(
-	function (a, b, c, d) {
-		return {id: a, title: b, content: c, order: d};
-	});
-var _user$project$Page$decode = A5(
-	_elm_lang$core$Json_Decode$object4,
-	_user$project$Page$Model,
-	A2(
-		_elm_lang$core$Json_Decode$at,
-		_elm_lang$core$Native_List.fromArray(
-			['sys', 'id']),
-		_elm_lang$core$Json_Decode$string),
-	A2(
-		_elm_lang$core$Json_Decode$at,
-		_elm_lang$core$Native_List.fromArray(
-			['fields', 'title']),
-		_elm_lang$core$Json_Decode$string),
-	A2(
-		_elm_lang$core$Json_Decode$at,
-		_elm_lang$core$Native_List.fromArray(
-			['fields', 'content']),
-		_elm_lang$core$Json_Decode$string),
-	A2(
-		_elm_lang$core$Json_Decode$at,
-		_elm_lang$core$Native_List.fromArray(
-			['fields', 'order']),
-		_elm_lang$core$Json_Decode$int));
-
 var _user$project$Menu$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -9043,9 +9108,9 @@ var _user$project$Menu$tabTitle = function (item) {
 			return _p0._0.title;
 	}
 };
-var _user$project$Menu$Model = F3(
-	function (a, b, c) {
-		return {posts: a, reviews: b, current: c};
+var _user$project$Menu$Model = F4(
+	function (a, b, c, d) {
+		return {posts: a, reviews: b, pages: c, current: d};
 	});
 var _user$project$Menu$Other = function (a) {
 	return {ctor: 'Other', _0: a};
@@ -9057,11 +9122,17 @@ var _user$project$Menu$BlogPosts = function (a) {
 	return {ctor: 'BlogPosts', _0: a};
 };
 var _user$project$Menu$tabs = function (model) {
-	return _elm_lang$core$Native_List.fromArray(
-		[
-			_user$project$Menu$BlogPosts(model.posts),
-			_user$project$Menu$BookReviews(model.reviews)
-		]);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Menu$BlogPosts(model.posts),
+				_user$project$Menu$BookReviews(model.reviews)
+			]),
+		A2(_elm_lang$core$List$map, _user$project$Menu$Other, model.pages));
+};
+var _user$project$Menu$Content = function (a) {
+	return {ctor: 'Content', _0: a};
 };
 var _user$project$Menu$UpdateBookReviews = function (a) {
 	return {ctor: 'UpdateBookReviews', _0: a};
@@ -9076,12 +9147,16 @@ var _user$project$Menu$init = function () {
 	var _p2 = _user$project$BlogPostList$init;
 	var posts = _p2._0;
 	var postsCmd = _p2._1;
+	var model = {posts: posts, reviews: reviews, pages: _user$project$MockData$pages, current: 0};
 	var commands = _elm_lang$core$Native_List.fromArray(
 		[
 			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBlog, postsCmd),
-			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBookReviews, reviewsCmd)
+			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBookReviews, reviewsCmd),
+			A2(
+			_elm_lang$core$Platform_Cmd$map,
+			_user$project$Menu$Content,
+			_user$project$ContentfulAPI$fetchPages(0))
 		]);
-	var model = {posts: posts, reviews: reviews, current: 0};
 	return {
 		ctor: '_Tuple2',
 		_0: model,
@@ -9111,7 +9186,7 @@ var _user$project$Menu$update = F2(
 						{posts: posts}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBlog, command)
 				};
-			default:
+			case 'UpdateBookReviews':
 				var _p5 = A2(_user$project$BookReviewList$update, _p3._0, model.reviews);
 				var reviews = _p5._0;
 				var command = _p5._1;
@@ -9122,23 +9197,36 @@ var _user$project$Menu$update = F2(
 						{reviews: reviews}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBookReviews, command)
 				};
+			default:
+				var _p6 = _p3._0;
+				if (_p6.ctor === 'FetchPages') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{pages: _p6._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 		}
 	});
 var _user$project$Menu$contentView = function (item) {
-	var _p6 = item;
-	switch (_p6.ctor) {
+	var _p7 = item;
+	switch (_p7.ctor) {
 		case 'BlogPosts':
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Menu$UpdateBlog,
-				_user$project$BlogPostList$view(_p6._0));
+				_user$project$BlogPostList$view(_p7._0));
 		case 'BookReviews':
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Menu$UpdateBookReviews,
-				_user$project$BookReviewList$view(_p6._0));
+				_user$project$BookReviewList$view(_p7._0));
 		default:
-			return _user$project$Page$view(_p6._0);
+			return _user$project$Page$view(_p7._0);
 	}
 };
 var _user$project$Menu$content = function (model) {
