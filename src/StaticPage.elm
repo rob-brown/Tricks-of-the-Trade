@@ -1,4 +1,4 @@
-module Page exposing
+module StaticPage exposing
   ( Model
   , decode
   , view

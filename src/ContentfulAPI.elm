@@ -11,12 +11,12 @@ import Task
 import ContentfulEndpoint
 import BookReview
 import BlogPost
-import Page
+import StaticPage
 
 type Msg
   = FetchBookReviews (List BookReview.Model)
   | FetchBlogPosts (List BlogPost.Model)
-  | FetchPages (List Page.Model)
+  | FetchPages (List StaticPage.Model)
   | FetchFail Http.Error
 
 fetchBookReviews : ContentfulEndpoint.Page -> Cmd Msg
@@ -39,6 +39,6 @@ fetchPages : ContentfulEndpoint.Page -> Cmd Msg
 fetchPages page =
   let
     url = ContentfulEndpoint.url (ContentfulEndpoint.Pages page)
-    decoder = Json.at ["items"] (Json.list Page.decode)
+    decoder = Json.at ["items"] (Json.list StaticPage.decode)
   in
     Task.perform FetchFail FetchPages (Http.get decoder url)

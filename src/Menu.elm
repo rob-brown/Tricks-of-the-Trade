@@ -12,7 +12,7 @@ import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Array exposing (Array)
-import Page
+import StaticPage
 import BookReviewList
 import BlogPostList
 import ContentfulAPI
@@ -23,12 +23,12 @@ import MockData
 type MenuItem
   = BlogPosts BlogPostList.Model
   | BookReviews BookReviewList.Model
-  | Other Page.Model
+  | Other StaticPage.Model
 
 type alias Model =
   { posts: BlogPostList.Model
   , reviews: BookReviewList.Model
-  , pages: List Page.Model
+  , pages: List StaticPage.Model
   , current: Int
   }
 
@@ -102,7 +102,7 @@ contentView item =
     BookReviews reviews ->
       App.map UpdateBookReviews (BookReviewList.view reviews)
     Other page ->
-      Page.view page
+      StaticPage.view page
 
 tabs : Model -> List MenuItem
 tabs model =

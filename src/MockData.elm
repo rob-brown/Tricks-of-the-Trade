@@ -2,7 +2,7 @@ module MockData exposing (..)
 
 import BlogPost
 import BookReview
-import Page
+import StaticPage
 
 blogPosts : List BlogPost.Model
 blogPosts =
@@ -27,8 +27,8 @@ bookReviews =
   , BookReview.Model "8" "Some Book" (Just "A witty subtitle") "Billy Bob" "http://www.amazon.com" "This is a great book; read it."
   ]
 
-pages : List Page.Model
+pages : List StaticPage.Model
 pages =
-  [ Page.Model "1" "About Me" "A page about me." 1
-  , Page.Model "2" "Hire Me" "Hire me for my ideal job." 2
+  [ StaticPage.Model "1" "About Me" "A page about me." 1
+  , StaticPage.Model "2" "Hire Me" "Hire me for my ideal job." 2
   ]

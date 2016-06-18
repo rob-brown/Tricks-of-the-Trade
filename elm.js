@@ -8578,7 +8578,7 @@ var _user$project$BookReview$decode = A7(
 			['fields', 'review']),
 		_elm_lang$core$Json_Decode$string));
 
-var _user$project$Page$view = function (model) {
+var _user$project$StaticPage$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -8604,13 +8604,13 @@ var _user$project$Page$view = function (model) {
 				model.content)
 			]));
 };
-var _user$project$Page$Model = F4(
+var _user$project$StaticPage$Model = F4(
 	function (a, b, c, d) {
 		return {id: a, title: b, content: c, order: d};
 	});
-var _user$project$Page$decode = A5(
+var _user$project$StaticPage$decode = A5(
 	_elm_lang$core$Json_Decode$object4,
-	_user$project$Page$Model,
+	_user$project$StaticPage$Model,
 	A2(
 		_elm_lang$core$Json_Decode$at,
 		_elm_lang$core$Native_List.fromArray(
@@ -8643,7 +8643,7 @@ var _user$project$ContentfulAPI$fetchPages = function (page) {
 		_elm_lang$core$Json_Decode$at,
 		_elm_lang$core$Native_List.fromArray(
 			['items']),
-		_elm_lang$core$Json_Decode$list(_user$project$Page$decode));
+		_elm_lang$core$Json_Decode$list(_user$project$StaticPage$decode));
 	var url = _user$project$ContentfulEndpoint$url(
 		_user$project$ContentfulEndpoint$Pages(page));
 	return A3(
@@ -8689,8 +8689,8 @@ var _user$project$ContentfulAPI$fetchBookReviews = function (page) {
 
 var _user$project$MockData$pages = _elm_lang$core$Native_List.fromArray(
 	[
-		A4(_user$project$Page$Model, '1', 'About Me', 'A page about me.', 1),
-		A4(_user$project$Page$Model, '2', 'Hire Me', 'Hire me for my ideal job.', 2)
+		A4(_user$project$StaticPage$Model, '1', 'About Me', 'A page about me.', 1),
+		A4(_user$project$StaticPage$Model, '2', 'Hire Me', 'Hire me for my ideal job.', 2)
 	]);
 var _user$project$MockData$bookReviews = _elm_lang$core$Native_List.fromArray(
 	[
@@ -9201,7 +9201,7 @@ var _user$project$Menu$contentView = function (item) {
 				_user$project$Menu$UpdateBookReviews,
 				_user$project$BookReviewList$view(_p6._0));
 		default:
-			return _user$project$Page$view(_p6._0);
+			return _user$project$StaticPage$view(_p6._0);
 	}
 };
 var _user$project$Menu$content = function (model) {
