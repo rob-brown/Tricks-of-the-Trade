@@ -8838,34 +8838,22 @@ var _user$project$BlogPostList$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
-				var _p1 = _p0._0;
-				switch (_p1.ctor) {
-					case 'FetchBlogPosts':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{posts: _p1._0}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 'FetchFail':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									error: _elm_lang$core$Maybe$Just(_p1._0)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				if (_p0._0.ctor === 'FetchBlogPosts') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{posts: _p0._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
-var _user$project$BlogPostList$Model = F3(
-	function (a, b, c) {
-		return {posts: a, selected: b, error: c};
+var _user$project$BlogPostList$Model = F2(
+	function (a, b) {
+		return {posts: a, selected: b};
 	});
 var _user$project$BlogPostList$DeselectPost = {ctor: 'DeselectPost'};
 var _user$project$BlogPostList$viewOne = function (post) {
@@ -8934,9 +8922,9 @@ var _user$project$BlogPostList$viewMany = function (posts) {
 			]));
 };
 var _user$project$BlogPostList$view = function (model) {
-	var _p2 = model.selected;
-	if (_p2.ctor === 'Just') {
-		return _user$project$BlogPostList$viewOne(_p2._0);
+	var _p1 = model.selected;
+	if (_p1.ctor === 'Just') {
+		return _user$project$BlogPostList$viewOne(_p1._0);
 	} else {
 		return _user$project$BlogPostList$viewMany(model.posts);
 	}
@@ -8950,7 +8938,7 @@ var _user$project$BlogPostList$init = function () {
 		_user$project$BlogPostList$Content,
 		_user$project$ContentfulAPI$fetchBlogPosts(0));
 	var posts = _user$project$MockData$blogPosts;
-	var model = {posts: posts, selected: _elm_lang$core$Maybe$Nothing, error: _elm_lang$core$Maybe$Nothing};
+	var model = {posts: posts, selected: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: model, _1: command};
 }();
 
@@ -8980,34 +8968,22 @@ var _user$project$BookReviewList$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
-				var _p1 = _p0._0;
-				switch (_p1.ctor) {
-					case 'FetchBookReviews':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{reviews: _p1._0}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 'FetchFail':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									error: _elm_lang$core$Maybe$Just(_p1._0)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				if (_p0._0.ctor === 'FetchBookReviews') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{reviews: _p0._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
-var _user$project$BookReviewList$Model = F3(
-	function (a, b, c) {
-		return {reviews: a, selected: b, error: c};
+var _user$project$BookReviewList$Model = F2(
+	function (a, b) {
+		return {reviews: a, selected: b};
 	});
 var _user$project$BookReviewList$DeselectReview = {ctor: 'DeselectReview'};
 var _user$project$BookReviewList$viewOne = function (review) {
@@ -9074,9 +9050,9 @@ var _user$project$BookReviewList$viewMany = function (reviews) {
 			]));
 };
 var _user$project$BookReviewList$view = function (model) {
-	var _p2 = model.selected;
-	if (_p2.ctor === 'Just') {
-		return _user$project$BookReviewList$viewOne(_p2._0);
+	var _p1 = model.selected;
+	if (_p1.ctor === 'Just') {
+		return _user$project$BookReviewList$viewOne(_p1._0);
 	} else {
 		return _user$project$BookReviewList$viewMany(model.reviews);
 	}
@@ -9090,7 +9066,7 @@ var _user$project$BookReviewList$init = function () {
 		_user$project$BookReviewList$Content,
 		_user$project$ContentfulAPI$fetchBookReviews(0));
 	var reviews = _user$project$MockData$bookReviews;
-	var model = {reviews: reviews, selected: _elm_lang$core$Maybe$Nothing, error: _elm_lang$core$Maybe$Nothing};
+	var model = {reviews: reviews, selected: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: model, _1: command};
 }();
 
@@ -9198,13 +9174,12 @@ var _user$project$Menu$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBookReviews, command)
 				};
 			default:
-				var _p6 = _p3._0;
-				if (_p6.ctor === 'FetchPages') {
+				if (_p3._0.ctor === 'FetchPages') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{pages: _p6._0}),
+							{pages: _p3._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -9213,20 +9188,20 @@ var _user$project$Menu$update = F2(
 		}
 	});
 var _user$project$Menu$contentView = function (item) {
-	var _p7 = item;
-	switch (_p7.ctor) {
+	var _p6 = item;
+	switch (_p6.ctor) {
 		case 'BlogPosts':
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Menu$UpdateBlog,
-				_user$project$BlogPostList$view(_p7._0));
+				_user$project$BlogPostList$view(_p6._0));
 		case 'BookReviews':
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Menu$UpdateBookReviews,
-				_user$project$BookReviewList$view(_p7._0));
+				_user$project$BookReviewList$view(_p6._0));
 		default:
-			return _user$project$Page$view(_p7._0);
+			return _user$project$Page$view(_p6._0);
 	}
 };
 var _user$project$Menu$content = function (model) {

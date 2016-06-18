@@ -22,14 +22,13 @@ import MockData
 type alias Model =
   { posts: List BlogPost.Model
   , selected: Maybe BlogPost.Model
-  , error: Maybe Http.Error
   }
 
 init : (Model, Cmd Msg)
 init =
   let
     posts = MockData.blogPosts
-    model = { posts=posts, selected=Nothing, error=Nothing }
+    model = { posts=posts, selected=Nothing }
     command = Cmd.map Content (ContentfulAPI.fetchBlogPosts 0)
   in
     (model, command)
@@ -48,14 +47,10 @@ update action model =
       ({ model | selected=Just post }, Cmd.none)
     DeselectPost ->
       ({ model | selected=Nothing }, Cmd.none)
-    Content subaction ->
-      case subaction of
-        ContentfulAPI.FetchBlogPosts posts ->
-          ({ model | posts=posts }, Cmd.none)
-        ContentfulAPI.FetchFail error ->
-          ({ model | error=Just error }, Cmd.none)
-        _ ->
-          (model, Cmd.none)
+    Content (ContentfulAPI.FetchBlogPosts posts) ->
+      ({ model | posts=posts }, Cmd.none)
+    _ ->
+      (model, Cmd.none)
 
 -- VIEW
 

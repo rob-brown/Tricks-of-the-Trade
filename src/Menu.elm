@@ -67,12 +67,10 @@ update action model =
       let (reviews, command) = BookReviewList.update subaction model.reviews
       in
         ({ model | reviews=reviews }, Cmd.map UpdateBookReviews command)
-    Content subaction ->
-      case subaction of
-        ContentfulAPI.FetchPages pages ->
-          ({ model | pages=pages }, Cmd.none)
-        _ ->
-          (model, Cmd.none)
+    Content (ContentfulAPI.FetchPages pages) ->
+      ({ model | pages=pages }, Cmd.none)
+    _ ->
+      (model, Cmd.none)
 
 -- VIEW
 
