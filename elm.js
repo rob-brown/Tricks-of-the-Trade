@@ -9331,14 +9331,14 @@ var _user$project$BlogPostList$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$BlogPostList$postEntry = function (post) {
+	var fragment = _user$project$Router$toFragment(
+		_user$project$Router$Post(post.slug));
 	return A2(
 		_elm_lang$html$Html$a,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('post-entry'),
-				_elm_lang$html$Html_Attributes$href(
-				_user$project$Router$toFragment(
-					_user$project$Router$Post(post.slug)))
+				_elm_lang$html$Html_Attributes$href(fragment)
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -9373,6 +9373,7 @@ var _user$project$BlogPostList$viewMany = function (posts) {
 			]));
 };
 var _user$project$BlogPostList$viewOne = function (post) {
+	var fragment = _user$project$Router$toFragment(_user$project$Router$Blog);
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -9384,8 +9385,7 @@ var _user$project$BlogPostList$viewOne = function (post) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html_Attributes$class('back-button'),
-						_elm_lang$html$Html_Attributes$href(
-						_user$project$Router$toFragment(_user$project$Router$Blog))
+						_elm_lang$html$Html_Attributes$href(fragment)
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -9491,14 +9491,14 @@ var _user$project$BookReviewList$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$BookReviewList$reviewEntry = function (review) {
+	var fragment = _user$project$Router$toFragment(
+		_user$project$Router$Review(review.slug));
 	return A2(
 		_elm_lang$html$Html$a,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('review-entry'),
-				_elm_lang$html$Html_Attributes$href(
-				_user$project$Router$toFragment(
-					_user$project$Router$Review(review.slug)))
+				_elm_lang$html$Html_Attributes$href(fragment)
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -9533,6 +9533,7 @@ var _user$project$BookReviewList$viewMany = function (reviews) {
 			]));
 };
 var _user$project$BookReviewList$viewOne = function (review) {
+	var fragment = _user$project$Router$toFragment(_user$project$Router$BookReviews);
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -9544,8 +9545,7 @@ var _user$project$BookReviewList$viewOne = function (review) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html_Attributes$class('back-button'),
-						_elm_lang$html$Html_Attributes$href(
-						_user$project$Router$toFragment(_user$project$Router$BookReviews))
+						_elm_lang$html$Html_Attributes$href(fragment)
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[

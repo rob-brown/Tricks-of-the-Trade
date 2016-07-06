@@ -77,10 +77,12 @@ view model =
 
 viewOne : BookReview.Model -> Html Msg
 viewOne review =
-  div []
-    [ a [class "back-button", href (Router.toFragment Router.BookReviews)] [text "Back to all reviews"]
-    , BookReview.fullView review
-    ]
+  let fragment = Router.toFragment Router.BookReviews
+  in
+    div []
+      [ a [class "back-button", href fragment] [text "Back to all reviews"]
+      , BookReview.fullView review
+      ]
 
 viewMany : List BookReview.Model -> Html Msg
 viewMany reviews =
@@ -98,7 +100,9 @@ content reviews =
 
 reviewEntry : BookReview.Model -> Html Msg
 reviewEntry review =
-  a [class "review-entry", href (Router.toFragment (Router.Review review.slug))] [BookReview.compactView review]
+  let fragment = Router.toFragment (Router.Review review.slug)
+  in
+    a [class "review-entry", href fragment] [BookReview.compactView review]
 
 -- SUBSCRIPTION
 

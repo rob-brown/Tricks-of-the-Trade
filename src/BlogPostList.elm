@@ -78,10 +78,12 @@ view model =
 
 viewOne : BlogPost.Model -> Html Msg
 viewOne post =
-  div []
-    [ a [class "back-button", href (Router.toFragment Router.Blog)] [text "Back to all posts"]
-    , BlogPost.fullView post
-    ]
+  let fragment = Router.toFragment Router.Blog
+  in
+    div []
+      [ a [class "back-button", href fragment] [text "Back to all posts"]
+      , BlogPost.fullView post
+      ]
 
 viewMany : List BlogPost.Model -> Html Msg
 viewMany posts =
@@ -99,11 +101,9 @@ content posts =
 
 postEntry : BlogPost.Model -> Html Msg
 postEntry post =
-  a
-    [ class "post-entry"
-    , href (Router.toFragment (Router.Post post.slug))
-    ]
-    [BlogPost.compactView post]
+  let fragment = Router.toFragment (Router.Post post.slug)
+  in
+    a [class "post-entry", href fragment] [BlogPost.compactView post]
 
 -- SUBSCRIPTION
 
