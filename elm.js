@@ -9332,131 +9332,6 @@ var _user$project$Router$fragmentParser = function (location) {
 		A2(_elm_lang$core$String$dropLeft, 1, location.hash));
 };
 
-var _user$project$MockData$pages = _elm_lang$core$Native_List.fromArray(
-	[
-		A5(_user$project$StaticPage$Model, '1', 'About Me', 'A page about me.', 'page-1', 1),
-		A5(_user$project$StaticPage$Model, '2', 'Hire Me', 'Hire me for my ideal job.', 'page-2', 2)
-	]);
-var _user$project$MockData$bookReviews = _elm_lang$core$Native_List.fromArray(
-	[
-		A6(
-		_user$project$BookReview$Model,
-		'1',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.'),
-		A6(
-		_user$project$BookReview$Model,
-		'2',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.'),
-		A6(
-		_user$project$BookReview$Model,
-		'3',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.'),
-		A6(
-		_user$project$BookReview$Model,
-		'4',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.'),
-		A6(
-		_user$project$BookReview$Model,
-		'5',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.'),
-		A6(
-		_user$project$BookReview$Model,
-		'6',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.'),
-		A6(
-		_user$project$BookReview$Model,
-		'7',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.'),
-		A6(
-		_user$project$BookReview$Model,
-		'8',
-		'Some Book',
-		_elm_lang$core$Maybe$Just('A witty subtitle'),
-		'Billy Bob',
-		'http://www.amazon.com',
-		'This is a great book; read it.')
-	]);
-var _user$project$MockData$blogPosts = _elm_lang$core$Native_List.fromArray(
-	[
-		A5(
-		_user$project$BlogPost$Model,
-		'1',
-		'Blog Post 1',
-		_elm_lang$core$Maybe$Just('Just a test'),
-		'This is a test, it is only a test.',
-		'2016-06-12T10:18-06:00'),
-		A5(
-		_user$project$BlogPost$Model,
-		'2',
-		'Blog Post 2',
-		_elm_lang$core$Maybe$Just('Just a test'),
-		'This is a test, it is only a test.',
-		'2016-06-12T10:18-06:00'),
-		A5(
-		_user$project$BlogPost$Model,
-		'3',
-		'Blog Post 3',
-		_elm_lang$core$Maybe$Just('Just a test'),
-		'This is a test, it is only a test.',
-		'2016-06-12T10:18-06:00'),
-		A5(
-		_user$project$BlogPost$Model,
-		'4',
-		'Blog Post 4',
-		_elm_lang$core$Maybe$Just('Just a test'),
-		'This is a test, it is only a test.',
-		'2016-06-12T10:18-06:00'),
-		A5(
-		_user$project$BlogPost$Model,
-		'5',
-		'Blog Post 5',
-		_elm_lang$core$Maybe$Just('Just a test'),
-		'This is a test, it is only a test.',
-		'2016-06-12T10:18-06:00'),
-		A5(
-		_user$project$BlogPost$Model,
-		'6',
-		'Blog Post 6',
-		_elm_lang$core$Maybe$Just('Just a test'),
-		'This is a test, it is only a test.',
-		'2016-06-12T10:18-06:00'),
-		A5(
-		_user$project$BlogPost$Model,
-		'7',
-		'Blog Post 7',
-		_elm_lang$core$Maybe$Just('Just a test'),
-		'This is a test, it is only a test.',
-		'2016-06-12T10:18-06:00')
-	]);
-
 var _user$project$BlogPostList$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -9611,7 +9486,8 @@ var _user$project$BlogPostList$init = function () {
 		_elm_lang$core$Platform_Cmd$map,
 		_user$project$BlogPostList$Content,
 		_user$project$ContentfulAPI$fetchBlogPosts(0));
-	var posts = _user$project$MockData$blogPosts;
+	var posts = _elm_lang$core$Native_List.fromArray(
+		[]);
 	var model = {posts: posts, selected: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: model, _1: command};
 }();
@@ -9765,7 +9641,8 @@ var _user$project$BookReviewList$init = function () {
 		_elm_lang$core$Platform_Cmd$map,
 		_user$project$BookReviewList$Content,
 		_user$project$ContentfulAPI$fetchBookReviews(0));
-	var reviews = _user$project$MockData$bookReviews;
+	var reviews = _elm_lang$core$Native_List.fromArray(
+		[]);
 	var model = {reviews: reviews, selected: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: model, _1: command};
 }();
@@ -10013,7 +9890,13 @@ var _user$project$Menu$init = function (result) {
 	var _p11 = _user$project$BlogPostList$init;
 	var posts = _p11._0;
 	var postsCmd = _p11._1;
-	var initialModel = {posts: posts, reviews: reviews, pages: _user$project$MockData$pages, route: _user$project$Router$Home};
+	var initialModel = {
+		posts: posts,
+		reviews: reviews,
+		pages: _elm_lang$core$Native_List.fromArray(
+			[]),
+		route: _user$project$Router$Home
+	};
 	var _p12 = A2(_user$project$Menu$urlUpdate, result, initialModel);
 	var model = _p12._0;
 	var urlCommands = _p12._1;

@@ -17,7 +17,6 @@ import Task
 import BookReview
 import ContentfulAPI
 import Router
-import MockData
 
 -- MODEL
 
@@ -29,7 +28,7 @@ type alias Model =
 init : (Model, Cmd Msg)
 init =
   let
-    reviews = MockData.bookReviews
+    reviews = []
     model = { reviews=reviews, selected=Nothing }
     command = Cmd.map Content (ContentfulAPI.fetchBookReviews 0)
   in

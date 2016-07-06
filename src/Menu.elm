@@ -17,7 +17,6 @@ import StaticPage
 import BookReviewList
 import BlogPostList
 import ContentfulAPI
-import MockData
 import Router
 
 -- MODEL
@@ -39,7 +38,7 @@ init result =
   let
     (posts, postsCmd) = BlogPostList.init
     (reviews, reviewsCmd) = BookReviewList.init
-    initialModel = { posts=posts, reviews=reviews, pages=MockData.pages, route=Router.Home }
+    initialModel = { posts=posts, reviews=reviews, pages=[], route=Router.Home }
     (model, urlCommands) = urlUpdate result initialModel
     commands =
       [ Cmd.map UpdateBlog postsCmd
