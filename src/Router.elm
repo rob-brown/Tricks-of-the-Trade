@@ -19,12 +19,12 @@ toFragment route =
       ""
     Blog ->
       "#posts"
-    Post id ->
-      "#posts/" ++ id
+    Post slug ->
+      "#posts/" ++ slug
     BookReviews ->
       "#reviews"
-    Review id ->
-      "#reviews/" ++ id
+    Review slug ->
+      "#reviews/" ++ slug
     Page slug ->
       "#pages/" ++ slug
 

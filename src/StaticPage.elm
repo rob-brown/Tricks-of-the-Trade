@@ -12,8 +12,7 @@ import Html.Attributes exposing (..)
 -- MODEL
 
 type alias Model =
-  { id: String
-  , title: String
+  { title: String
   , content: String
   , slug: String
   , order: Int
@@ -21,8 +20,7 @@ type alias Model =
 
 decode : Json.Decoder Model
 decode =
-  Json.object5 Model
-    (Json.at ["sys", "id"] Json.string)
+  Json.object4 Model
     (Json.at ["fields", "title"] Json.string)
     (Json.at ["fields", "content"] Json.string)
     (Json.at ["fields", "slug"] Json.string)

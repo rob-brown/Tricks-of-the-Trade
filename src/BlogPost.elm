@@ -13,23 +13,21 @@ import Html.Attributes exposing (..)
 -- MODEL
 
 type alias Model =
-  { id: String
+  { slug: String
   , title: String
   , summary: Maybe String
   , entry: String
   , date: String  -- Ex. "2016-06-12T10:18-06:00"
-  -- , images: List String
   }
 
 decode : Json.Decoder Model
 decode =
   Json.object5 Model
-    (Json.at ["sys", "id"] Json.string)
+    (Json.at ["fields", "slug"] Json.string)
     (Json.at ["fields", "title"] Json.string)
     (Json.at ["fields", "summary"] (Json.maybe Json.string))
     (Json.at ["fields", "entry"] Json.string)
     (Json.at ["fields", "date"] Json.string)
-    -- (Json.at ["fields", "images"] (Json.list Json.string))
 
 -- VIEW
 

@@ -44,8 +44,8 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
-    SelectPost id ->
-      ({ model | selected=Just id }, Cmd.none)
+    SelectPost slug ->
+      ({ model | selected=Just slug }, Cmd.none)
     DeselectPost ->
       ({ model | selected=Nothing }, Cmd.none)
     Content (ContentfulAPI.FetchBlogPosts posts) ->
@@ -56,9 +56,9 @@ update action model =
 urlUpdate : Router.Route -> Model -> (Model, Cmd Msg)
 urlUpdate route model =
   case route of
-    Router.Post id ->
-      Debug.log ("Clicked blog post: " ++ id)
-      update (SelectPost id) model
+    Router.Post slug ->
+      Debug.log ("Clicked blog post: " ++ slug)
+      update (SelectPost slug) model
     _ ->
       update DeselectPost model
 
@@ -67,9 +67,9 @@ urlUpdate route model =
 view : Model -> Html Msg
 view model =
   case model.selected of
-    Just id ->
+    Just slug ->
       model.posts
-      |> List.filter (\post -> post.id == id)
+      |> List.filter (\post -> post.slug == slug)
       |> List.head
       |> Maybe.map viewOne
       |> Maybe.withDefault (text "No such post.")
@@ -101,7 +101,7 @@ postEntry : BlogPost.Model -> Html Msg
 postEntry post =
   a
     [ class "post-entry"
-    , href (Router.toFragment (Router.Post post.id))
+    , href (Router.toFragment (Router.Post post.slug))
     ]
     [BlogPost.compactView post]
 

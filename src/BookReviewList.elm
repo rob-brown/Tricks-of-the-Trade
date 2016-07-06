@@ -44,8 +44,8 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
-    SelectReview id ->
-      ({ model | selected=Just id }, Cmd.none)
+    SelectReview slug ->
+      ({ model | selected=Just slug }, Cmd.none)
     DeselectReview ->
       ({ model | selected=Nothing }, Cmd.none)
     Content (ContentfulAPI.FetchBookReviews reviews) ->
@@ -56,8 +56,8 @@ update action model =
 urlUpdate : Router.Route -> Model -> (Model, Cmd Msg)
 urlUpdate route model =
   case route of
-    Router.Review id ->
-      update (SelectReview id) model
+    Router.Review slug ->
+      update (SelectReview slug) model
     _ ->
       update DeselectReview model
 
@@ -66,9 +66,9 @@ urlUpdate route model =
 view : Model -> Html Msg
 view model =
   case model.selected of
-    Just id ->
+    Just slug ->
       model.reviews
-      |> List.filter (\review -> review.id == id)
+      |> List.filter (\review -> review.slug == slug)
       |> List.head
       |> Maybe.map viewOne
       |> Maybe.withDefault (text "No such review.")
@@ -84,7 +84,7 @@ viewOne review =
 
 viewMany : List BookReview.Model -> Html Msg
 viewMany reviews =
-  div []
+  div [class "review-list"]
     [ h1 [] [text "Book Reviews"]
     , content reviews
     ]
@@ -98,7 +98,7 @@ content reviews =
 
 reviewEntry : BookReview.Model -> Html Msg
 reviewEntry review =
-  a [class "review-entry", href (Router.toFragment (Router.Review review.id))] [BookReview.compactView review]
+  a [class "review-entry", href (Router.toFragment (Router.Review review.slug))] [BookReview.compactView review]
 
 -- SUBSCRIPTION
 

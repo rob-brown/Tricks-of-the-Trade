@@ -8810,7 +8810,7 @@ var _user$project$BlogPost$compactView = function (model) {
 };
 var _user$project$BlogPost$Model = F5(
 	function (a, b, c, d, e) {
-		return {id: a, title: b, summary: c, entry: d, date: e};
+		return {slug: a, title: b, summary: c, entry: d, date: e};
 	});
 var _user$project$BlogPost$decode = A6(
 	_elm_lang$core$Json_Decode$object5,
@@ -8818,7 +8818,7 @@ var _user$project$BlogPost$decode = A6(
 	A2(
 		_elm_lang$core$Json_Decode$at,
 		_elm_lang$core$Native_List.fromArray(
-			['sys', 'id']),
+			['fields', 'slug']),
 		_elm_lang$core$Json_Decode$string),
 	A2(
 		_elm_lang$core$Json_Decode$at,
@@ -9108,7 +9108,7 @@ var _user$project$BookReview$compactView = function (model) {
 };
 var _user$project$BookReview$Model = F6(
 	function (a, b, c, d, e, f) {
-		return {id: a, title: b, subtitle: c, author: d, url: e, review: f};
+		return {slug: a, title: b, subtitle: c, author: d, url: e, review: f};
 	});
 var _user$project$BookReview$decode = A7(
 	_elm_lang$core$Json_Decode$object6,
@@ -9116,7 +9116,7 @@ var _user$project$BookReview$decode = A7(
 	A2(
 		_elm_lang$core$Json_Decode$at,
 		_elm_lang$core$Native_List.fromArray(
-			['sys', 'id']),
+			['fields', 'slug']),
 		_elm_lang$core$Json_Decode$string),
 	A2(
 		_elm_lang$core$Json_Decode$at,
@@ -9170,18 +9170,13 @@ var _user$project$StaticPage$view = function (model) {
 				model.content)
 			]));
 };
-var _user$project$StaticPage$Model = F5(
-	function (a, b, c, d, e) {
-		return {id: a, title: b, content: c, slug: d, order: e};
+var _user$project$StaticPage$Model = F4(
+	function (a, b, c, d) {
+		return {title: a, content: b, slug: c, order: d};
 	});
-var _user$project$StaticPage$decode = A6(
-	_elm_lang$core$Json_Decode$object5,
+var _user$project$StaticPage$decode = A5(
+	_elm_lang$core$Json_Decode$object4,
 	_user$project$StaticPage$Model,
-	A2(
-		_elm_lang$core$Json_Decode$at,
-		_elm_lang$core$Native_List.fromArray(
-			['sys', 'id']),
-		_elm_lang$core$Json_Decode$string),
 	A2(
 		_elm_lang$core$Json_Decode$at,
 		_elm_lang$core$Native_List.fromArray(
@@ -9343,7 +9338,7 @@ var _user$project$BlogPostList$postEntry = function (post) {
 				_elm_lang$html$Html_Attributes$class('post-entry'),
 				_elm_lang$html$Html_Attributes$href(
 				_user$project$Router$toFragment(
-					_user$project$Router$Post(post.id)))
+					_user$project$Router$Post(post.slug)))
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -9412,7 +9407,7 @@ var _user$project$BlogPostList$view = function (model) {
 					A2(
 						_elm_lang$core$List$filter,
 						function (post) {
-							return _elm_lang$core$Native_Utils.eq(post.id, _p0._0);
+							return _elm_lang$core$Native_Utils.eq(post.slug, _p0._0);
 						},
 						model.posts))));
 	} else {
@@ -9503,7 +9498,7 @@ var _user$project$BookReviewList$reviewEntry = function (review) {
 				_elm_lang$html$Html_Attributes$class('review-entry'),
 				_elm_lang$html$Html_Attributes$href(
 				_user$project$Router$toFragment(
-					_user$project$Router$Review(review.id)))
+					_user$project$Router$Review(review.slug)))
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -9521,7 +9516,9 @@ var _user$project$BookReviewList$viewMany = function (reviews) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('review-list')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -9570,7 +9567,7 @@ var _user$project$BookReviewList$view = function (model) {
 					A2(
 						_elm_lang$core$List$filter,
 						function (review) {
-							return _elm_lang$core$Native_Utils.eq(review.id, _p0._0);
+							return _elm_lang$core$Native_Utils.eq(review.slug, _p0._0);
 						},
 						model.reviews))));
 	} else {
