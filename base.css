@@ -1,7 +1,3 @@
-body {
-  font-family: "Arial", sans-serif;
-}
-
 .container {
   background-color: #eee;
 }
@@ -18,41 +14,28 @@ body {
 }
 
 .footer {
-  margin-top: 24px;
   padding-top: 19px;
+  margin: 24px 15px 0px;
   color: #777;
   border-top: 1px solid #e5e5e5;
 }
 
-.book-title {
-
+.container {
+  padding: 0;
 }
 
-.book-subtitle {
-
+#main {
+  padding: 0 15px;
 }
 
-.book-author {
-
-}
-
-.book-review, .post-body {
-  font-family: Palatino, serif;
-}
-
-.post-title, .post-summary {
-  font-family: "Arial", sans-serif;
-}
-
-.post-entry:hover, .review-entry:hover {
-  background-color: #ddd;
+.post-entry, .review-entry, .post-entry:hover, .review-entry:hover {
+  color: black;
 }
 
 #site-title h1 {
-  font-family: "Arial Black", sans-serif;
   text-align: center;
   background-color: #003865;
-  color: #ddd;
+  color: white;
   padding: 10px 20px 10px 20px;
   margin: 0;
 }
