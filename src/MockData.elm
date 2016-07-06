@@ -29,6 +29,6 @@ bookReviews =
 
 pages : List StaticPage.Model
 pages =
-  [ StaticPage.Model "1" "About Me" "A page about me." 1
-  , StaticPage.Model "2" "Hire Me" "Hire me for my ideal job." 2
+  [ StaticPage.Model "1" "About Me" "A page about me." "page-1" 1
+  , StaticPage.Model "2" "Hire Me" "Hire me for my ideal job." "page-2" 2
   ]

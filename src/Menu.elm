@@ -3,6 +3,7 @@ module Menu exposing
   , Model
   , init
   , update
+  , urlUpdate
   , view
   , subscriptions
   )
@@ -11,12 +12,13 @@ import Html exposing (..)
 import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Array exposing (Array)
+import Navigation
 import StaticPage
 import BookReviewList
 import BlogPostList
 import ContentfulAPI
 import MockData
+import Router
 
 -- MODEL
 
@@ -29,19 +31,21 @@ type alias Model =
   { posts: BlogPostList.Model
   , reviews: BookReviewList.Model
   , pages: List StaticPage.Model
-  , current: Int
+  , route: Router.Route
   }
 
-init : (Model, Cmd Msg)
-init =
+init : Result String Router.Route -> (Model, Cmd Msg)
+init result =
   let
     (posts, postsCmd) = BlogPostList.init
     (reviews, reviewsCmd) = BookReviewList.init
-    model = { posts=posts, reviews=reviews, pages=MockData.pages, current=0 }
+    initialModel = { posts=posts, reviews=reviews, pages=MockData.pages, route=Router.Home }
+    (model, urlCommands) = urlUpdate result initialModel
     commands =
       [ Cmd.map UpdateBlog postsCmd
       , Cmd.map UpdateBookReviews reviewsCmd
       , Cmd.map Content (ContentfulAPI.fetchPages 0)
+      , urlCommands
       ]
   in
     (model, Cmd.batch commands)
@@ -49,7 +53,7 @@ init =
 -- UPDATE
 
 type Msg
-  = SelectItem Int
+  = SelectItem Router.Route
   | UpdateBlog BlogPostList.Msg
   | UpdateBookReviews BookReviewList.Msg
   | Content ContentfulAPI.Msg
@@ -57,8 +61,8 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
-    SelectItem index ->
-      ({ model | current=index }, Cmd.none)
+    SelectItem route ->
+      ({ model | route=route }, Cmd.none)
     UpdateBlog subaction ->
       let (posts, command) = BlogPostList.update subaction model.posts
       in
@@ -72,11 +76,25 @@ update action model =
     _ ->
       (model, Cmd.none)
 
+urlUpdate : Result String Router.Route -> Model -> (Model, Cmd Msg)
+urlUpdate result model =
+  case result of
+    Err error ->
+      Debug.log ("Routing error: " ++ (toString error))
+      (model, Navigation.modifyUrl (Router.toFragment model.route))
+    Ok route ->
+      let
+        (posts, postsCmd) = BlogPostList.urlUpdate route model.posts
+        (reviews, reviewsCmd) = BookReviewList.urlUpdate route model.reviews
+        commands = [Cmd.map UpdateBlog postsCmd, Cmd.map UpdateBookReviews reviewsCmd]
+      in
+        ({ model | posts=posts, reviews=reviews, route=route }, Cmd.batch commands)
+
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  let tabViews = (List.indexedMap (tabView model.current) (tabs model))
+  let tabViews = (List.map (tabView model.route) (tabs model))
   in
     div []
       [ header []
@@ -89,8 +107,8 @@ content : Model -> Html Msg
 content model =
   model
   |> tabs
-  |> Array.fromList
-  |> Array.get model.current
+  |> List.filter (isSelected model.route)
+  |> List.head
   |> Maybe.map contentView
   |> Maybe.withDefault (text "Missing Content")
 
@@ -108,23 +126,39 @@ tabs : Model -> List MenuItem
 tabs model =
   [BlogPosts model.posts, BookReviews model.reviews] ++ List.map Other model.pages
 
-tabView : Int -> Int -> MenuItem -> Html Msg
-tabView selected index item =
-  li
-    [ onClick (SelectItem index)
-    , classList [("menu-item", True), ("selected", selected == index)]
-    ]
-    [text (tabTitle item)]
+tabView : Router.Route -> MenuItem -> Html Msg
+tabView route item =
+  let
+    classes = classList
+      [ ("menu-item", True)
+      , ("selected", (isSelected route item))
+      ]
+  in
+    case item of
+      BlogPosts _ ->
+        li [] [a [href "#posts", classes] [text "Blog"]]
+      BookReviews _ ->
+        li [] [a [href "#reviews", classes] [text "Bookshelf"]]
+      Other page ->
+        li [] [a [href ("#pages/" ++ page.slug), classes] [text page.title]]
 
-tabTitle : MenuItem -> String
-tabTitle item =
-  case item of
-    BlogPosts _ ->
-      "Blog"
-    BookReviews _ ->
-      "Book Reviews"
-    Other page ->
-      page.title
+isSelected : Router.Route -> MenuItem -> Bool
+isSelected route item =
+  case (route, item) of
+    (Router.Home, BlogPosts _) ->
+      True
+    (Router.Blog, BlogPosts _) ->
+      True
+    (Router.Post _, BlogPosts _) ->
+      True
+    (Router.BookReviews, BookReviews _) ->
+      True
+    (Router.Review _, BookReviews _) ->
+      True
+    (Router.Page slug, Other page) ->
+      page.slug == slug
+    _ ->
+      False
 
 -- SUBSCRIPTION
 

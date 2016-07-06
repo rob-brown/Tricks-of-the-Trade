@@ -4,6 +4,7 @@ module BlogPostList exposing
   , init
   , view
   , update
+  , urlUpdate
   , subscriptions
   )
 
@@ -15,13 +16,14 @@ import Http
 import Task
 import BlogPost
 import ContentfulAPI
+import Router
 import MockData
 
 -- MODEL
 
 type alias Model =
   { posts: List BlogPost.Model
-  , selected: Maybe BlogPost.Model
+  , selected: Maybe String
   }
 
 init : (Model, Cmd Msg)
@@ -37,14 +39,14 @@ init =
 
 type Msg
   = Content ContentfulAPI.Msg
-  | SelectPost BlogPost.Model
+  | SelectPost String
   | DeselectPost
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
-    SelectPost post ->
-      ({ model | selected=Just post }, Cmd.none)
+    SelectPost id ->
+      ({ model | selected=Just id }, Cmd.none)
     DeselectPost ->
       ({ model | selected=Nothing }, Cmd.none)
     Content (ContentfulAPI.FetchBlogPosts posts) ->
@@ -52,20 +54,33 @@ update action model =
     _ ->
       (model, Cmd.none)
 
+urlUpdate : Router.Route -> Model -> (Model, Cmd Msg)
+urlUpdate route model =
+  case route of
+    Router.Post id ->
+      Debug.log ("Clicked blog post: " ++ id)
+      update (SelectPost id) model
+    _ ->
+      update DeselectPost model
+
 -- VIEW
 
 view : Model -> Html Msg
 view model =
   case model.selected of
-    Just post ->
-      viewOne post
+    Just id ->
+      model.posts
+      |> List.filter (\post -> post.id == id)
+      |> List.head
+      |> Maybe.map viewOne
+      |> Maybe.withDefault (text "No such post.")
     Nothing ->
       viewMany model.posts
 
 viewOne : BlogPost.Model -> Html Msg
 viewOne post =
   div []
-    [ button [class "back-button", onClick DeselectPost] [text "Back to all posts"]
+    [ a [class "back-button", href (Router.toFragment Router.Blog)] [text "Back to all posts"]
     , BlogPost.fullView post
     ]
 
@@ -85,7 +100,11 @@ content posts =
 
 postEntry : BlogPost.Model -> Html Msg
 postEntry post =
-  p [class "post-entry", onClick (SelectPost post)] [BlogPost.compactView post]
+  a
+    [ class "post-entry"
+    , href (Router.toFragment (Router.Post post.id))
+    ]
+    [BlogPost.compactView post]
 
 -- SUBSCRIPTION
 

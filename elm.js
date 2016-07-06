@@ -6025,6 +6025,47 @@ var _elm_lang$core$Json_Decode$dict = function (decoder) {
 };
 var _elm_lang$core$Json_Decode$Decoder = {ctor: 'Decoder'};
 
+var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
+var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
+var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
+var _elm_lang$dom$Native_Dom = function() {
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+return {
+	onDocument: F3(on(document)),
+	onWindow: F3(on(window))
+};
+
+}();
+
+var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
+var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
+
 //import Native.Json //
 
 var _elm_lang$virtual_dom$Native_VirtualDom = function() {
@@ -7668,6 +7709,353 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _elm_lang$navigation$Native_Navigation = function() {
+
+function go(n)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		if (n !== 0)
+		{
+			history.go(n);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function pushState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.pushState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function replaceState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.replaceState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function getLocation()
+{
+	var location = document.location;
+
+	return {
+		href: location.href,
+		host: location.host,
+		hostname: location.hostname,
+		protocol: location.protocol,
+		origin: location.origin,
+		port_: location.port,
+		pathname: location.pathname,
+		search: location.search,
+		hash: location.hash,
+		username: location.username,
+		password: location.password
+	};
+}
+
+
+return {
+	go: go,
+	pushState: pushState,
+	replaceState: replaceState,
+	getLocation: getLocation
+};
+
+}();
+
+var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
+var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
+var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
+var _elm_lang$navigation$Navigation$spawnPopState = function (router) {
+	return _elm_lang$core$Process$spawn(
+		A3(
+			_elm_lang$dom$Dom_LowLevel$onWindow,
+			'popstate',
+			_elm_lang$core$Json_Decode$value,
+			function (_p0) {
+				return A2(
+					_elm_lang$core$Platform$sendToSelf,
+					router,
+					_elm_lang$navigation$Native_Navigation.getLocation(
+						{ctor: '_Tuple0'}));
+			}));
+};
+var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
+_elm_lang$navigation$Navigation_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			task1,
+			function (_p1) {
+				return task2;
+			});
+	});
+var _elm_lang$navigation$Navigation$notify = F3(
+	function (router, subs, location) {
+		var send = function (_p2) {
+			var _p3 = _p2;
+			return A2(
+				_elm_lang$core$Platform$sendToApp,
+				router,
+				_p3._0(location));
+		};
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(_elm_lang$core$List$map, send, subs)),
+			_elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'}));
+	});
+var _elm_lang$navigation$Navigation$onSelfMsg = F3(
+	function (router, location, state) {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
+			_elm_lang$core$Task$succeed(state));
+	});
+var _elm_lang$navigation$Navigation$cmdHelp = F3(
+	function (router, subs, cmd) {
+		var _p4 = cmd;
+		switch (_p4.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$go(_p4._0);
+			case 'New':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					_elm_lang$navigation$Navigation$pushState(_p4._0),
+					A2(_elm_lang$navigation$Navigation$notify, router, subs));
+			default:
+				return A2(
+					_elm_lang$core$Task$andThen,
+					_elm_lang$navigation$Navigation$replaceState(_p4._0),
+					A2(_elm_lang$navigation$Navigation$notify, router, subs));
+		}
+	});
+var _elm_lang$navigation$Navigation$updateHelp = F2(
+	function (func, _p5) {
+		var _p6 = _p5;
+		return {
+			ctor: '_Tuple2',
+			_0: _p6._0,
+			_1: A2(_elm_lang$core$Platform_Cmd$map, func, _p6._1)
+		};
+	});
+var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$Location = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _elm_lang$navigation$Navigation$State = F2(
+	function (a, b) {
+		return {subs: a, process: b};
+	});
+var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
+	A2(
+		_elm_lang$navigation$Navigation$State,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Maybe$Nothing));
+var _elm_lang$navigation$Navigation$onEffects = F4(
+	function (router, cmds, subs, _p7) {
+		var _p8 = _p7;
+		var _p10 = _p8.process;
+		var stepState = function () {
+			var _p9 = {ctor: '_Tuple2', _0: subs, _1: _p10};
+			_v4_2:
+			do {
+				if (_p9._0.ctor === '[]') {
+					if (_p9._1.ctor === 'Just') {
+						return A2(
+							_elm_lang$navigation$Navigation_ops['&>'],
+							_elm_lang$core$Process$kill(_p9._1._0),
+							_elm_lang$core$Task$succeed(
+								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
+					} else {
+						break _v4_2;
+					}
+				} else {
+					if (_p9._1.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							_elm_lang$navigation$Navigation$spawnPopState(router),
+							function (pid) {
+								return _elm_lang$core$Task$succeed(
+									A2(
+										_elm_lang$navigation$Navigation$State,
+										subs,
+										_elm_lang$core$Maybe$Just(pid)));
+							});
+					} else {
+						break _v4_2;
+					}
+				}
+			} while(false);
+			return _elm_lang$core$Task$succeed(
+				A2(_elm_lang$navigation$Navigation$State, subs, _p10));
+		}();
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
+					cmds)),
+			stepState);
+	});
+var _elm_lang$navigation$Navigation$UserMsg = function (a) {
+	return {ctor: 'UserMsg', _0: a};
+};
+var _elm_lang$navigation$Navigation$Change = function (a) {
+	return {ctor: 'Change', _0: a};
+};
+var _elm_lang$navigation$Navigation$Parser = function (a) {
+	return {ctor: 'Parser', _0: a};
+};
+var _elm_lang$navigation$Navigation$makeParser = _elm_lang$navigation$Navigation$Parser;
+var _elm_lang$navigation$Navigation$Modify = function (a) {
+	return {ctor: 'Modify', _0: a};
+};
+var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Modify(url));
+};
+var _elm_lang$navigation$Navigation$New = function (a) {
+	return {ctor: 'New', _0: a};
+};
+var _elm_lang$navigation$Navigation$newUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$New(url));
+};
+var _elm_lang$navigation$Navigation$Jump = function (a) {
+	return {ctor: 'Jump', _0: a};
+};
+var _elm_lang$navigation$Navigation$back = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(0 - n));
+};
+var _elm_lang$navigation$Navigation$forward = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(n));
+};
+var _elm_lang$navigation$Navigation$cmdMap = F2(
+	function (_p11, myCmd) {
+		var _p12 = myCmd;
+		switch (_p12.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$Jump(_p12._0);
+			case 'New':
+				return _elm_lang$navigation$Navigation$New(_p12._0);
+			default:
+				return _elm_lang$navigation$Navigation$Modify(_p12._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$Monitor = function (a) {
+	return {ctor: 'Monitor', _0: a};
+};
+var _elm_lang$navigation$Navigation$programWithFlags = F2(
+	function (_p13, stuff) {
+		var _p14 = _p13;
+		var _p16 = _p14._0;
+		var location = _elm_lang$navigation$Native_Navigation.getLocation(
+			{ctor: '_Tuple0'});
+		var init = function (flags) {
+			return A2(
+				_elm_lang$navigation$Navigation$updateHelp,
+				_elm_lang$navigation$Navigation$UserMsg,
+				A2(
+					stuff.init,
+					flags,
+					_p16(location)));
+		};
+		var view = function (model) {
+			return A2(
+				_elm_lang$html$Html_App$map,
+				_elm_lang$navigation$Navigation$UserMsg,
+				stuff.view(model));
+		};
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(_elm_lang$navigation$Navigation$Change)),
+						A2(
+						_elm_lang$core$Platform_Sub$map,
+						_elm_lang$navigation$Navigation$UserMsg,
+						stuff.subscriptions(model))
+					]));
+		};
+		var update = F2(
+			function (msg, model) {
+				return A2(
+					_elm_lang$navigation$Navigation$updateHelp,
+					_elm_lang$navigation$Navigation$UserMsg,
+					function () {
+						var _p15 = msg;
+						if (_p15.ctor === 'Change') {
+							return A2(
+								stuff.urlUpdate,
+								_p16(_p15._0),
+								model);
+						} else {
+							return A2(stuff.update, _p15._0, model);
+						}
+					}());
+			});
+		return _elm_lang$html$Html_App$programWithFlags(
+			{init: init, view: view, update: update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$program = F2(
+	function (parser, stuff) {
+		return A2(
+			_elm_lang$navigation$Navigation$programWithFlags,
+			parser,
+			_elm_lang$core$Native_Utils.update(
+				stuff,
+				{
+					init: function (_p17) {
+						return stuff.init;
+					}
+				}));
+	});
+var _elm_lang$navigation$Navigation$subMap = F2(
+	function (func, _p18) {
+		var _p19 = _p18;
+		return _elm_lang$navigation$Navigation$Monitor(
+			function (_p20) {
+				return func(
+					_p19._0(_p20));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
+
 //import Dict, List, Maybe, Native.Scheduler //
 
 var _evancz$elm_http$Native_Http = function() {
@@ -8165,6 +8553,184 @@ var _evancz$elm_markdown$Markdown$Options = F4(
 		return {githubFlavored: a, defaultHighlighting: b, sanitize: c, smartypants: d};
 	});
 
+var _evancz$url_parser$UrlParser$oneOfHelp = F3(
+	function (choices, chunks, formatter) {
+		oneOfHelp:
+		while (true) {
+			var _p0 = choices;
+			if (_p0.ctor === '[]') {
+				return _elm_lang$core$Result$Err('Tried many parsers, but none of them worked!');
+			} else {
+				var _p1 = A2(_p0._0._0, chunks, formatter);
+				if (_p1.ctor === 'Err') {
+					var _v2 = _p0._1,
+						_v3 = chunks,
+						_v4 = formatter;
+					choices = _v2;
+					chunks = _v3;
+					formatter = _v4;
+					continue oneOfHelp;
+				} else {
+					return _elm_lang$core$Result$Ok(_p1._0);
+				}
+			}
+		}
+	});
+var _evancz$url_parser$UrlParser$Chunks = F2(
+	function (a, b) {
+		return {seen: a, rest: b};
+	});
+var _evancz$url_parser$UrlParser$parse = F3(
+	function (input, _p2, url) {
+		var _p3 = _p2;
+		var _p4 = A2(
+			_p3._0,
+			A2(
+				_evancz$url_parser$UrlParser$Chunks,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				A2(_elm_lang$core$String$split, '/', url)),
+			input);
+		if (_p4.ctor === 'Err') {
+			return _elm_lang$core$Result$Err(_p4._0);
+		} else {
+			var _p7 = _p4._0._1;
+			var _p6 = _p4._0._0.rest;
+			var _p5 = _p6;
+			if (_p5.ctor === '[]') {
+				return _elm_lang$core$Result$Ok(_p7);
+			} else {
+				if ((_p5._0 === '') && (_p5._1.ctor === '[]')) {
+					return _elm_lang$core$Result$Ok(_p7);
+				} else {
+					return _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'The parser worked, but /',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								A2(_elm_lang$core$String$join, '/', _p6),
+								' was left over.')));
+				}
+			}
+		}
+	});
+var _evancz$url_parser$UrlParser$Parser = function (a) {
+	return {ctor: 'Parser', _0: a};
+};
+var _evancz$url_parser$UrlParser$s = function (str) {
+	return _evancz$url_parser$UrlParser$Parser(
+		F2(
+			function (_p8, result) {
+				var _p9 = _p8;
+				var _p12 = _p9.rest;
+				var _p10 = _p12;
+				if (_p10.ctor === '[]') {
+					return _elm_lang$core$Result$Err(
+						A2(_elm_lang$core$Basics_ops['++'], 'Got to the end of the URL but wanted /', str));
+				} else {
+					var _p11 = _p10._0;
+					return _elm_lang$core$Native_Utils.eq(_p11, str) ? _elm_lang$core$Result$Ok(
+						{
+							ctor: '_Tuple2',
+							_0: A2(
+								_evancz$url_parser$UrlParser$Chunks,
+								A2(_elm_lang$core$List_ops['::'], _p11, _p9.seen),
+								_p10._1),
+							_1: result
+						}) : _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Wanted /',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								str,
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' but got /',
+									A2(_elm_lang$core$String$join, '/', _p12)))));
+				}
+			}));
+};
+var _evancz$url_parser$UrlParser$custom = F2(
+	function (tipe, stringToSomething) {
+		return _evancz$url_parser$UrlParser$Parser(
+			F2(
+				function (_p13, func) {
+					var _p14 = _p13;
+					var _p15 = _p14.rest;
+					if (_p15.ctor === '[]') {
+						return _elm_lang$core$Result$Err(
+							A2(_elm_lang$core$Basics_ops['++'], 'Got to the end of the URL but wanted /', tipe));
+					} else {
+						var _p17 = _p15._0;
+						var _p16 = stringToSomething(_p17);
+						if (_p16.ctor === 'Ok') {
+							return _elm_lang$core$Result$Ok(
+								{
+									ctor: '_Tuple2',
+									_0: A2(
+										_evancz$url_parser$UrlParser$Chunks,
+										A2(_elm_lang$core$List_ops['::'], _p17, _p14.seen),
+										_p15._1),
+									_1: func(_p16._0)
+								});
+						} else {
+							return _elm_lang$core$Result$Err(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Parsing `',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_p17,
+										A2(_elm_lang$core$Basics_ops['++'], '` went wrong: ', _p16._0))));
+						}
+					}
+				}));
+	});
+var _evancz$url_parser$UrlParser$string = A2(_evancz$url_parser$UrlParser$custom, 'STRING', _elm_lang$core$Result$Ok);
+var _evancz$url_parser$UrlParser$int = A2(_evancz$url_parser$UrlParser$custom, 'NUMBER', _elm_lang$core$String$toInt);
+var _evancz$url_parser$UrlParser_ops = _evancz$url_parser$UrlParser_ops || {};
+_evancz$url_parser$UrlParser_ops['</>'] = F2(
+	function (_p19, _p18) {
+		var _p20 = _p19;
+		var _p21 = _p18;
+		return _evancz$url_parser$UrlParser$Parser(
+			F2(
+				function (chunks, func) {
+					return A2(
+						_elm_lang$core$Result$andThen,
+						A2(_p20._0, chunks, func),
+						function (_p22) {
+							var _p23 = _p22;
+							return A2(_p21._0, _p23._0, _p23._1);
+						});
+				}));
+	});
+var _evancz$url_parser$UrlParser$oneOf = function (choices) {
+	return _evancz$url_parser$UrlParser$Parser(
+		_evancz$url_parser$UrlParser$oneOfHelp(choices));
+};
+var _evancz$url_parser$UrlParser$format = F2(
+	function (input, _p24) {
+		var _p25 = _p24;
+		return _evancz$url_parser$UrlParser$Parser(
+			F2(
+				function (chunks, func) {
+					var _p26 = A2(_p25._0, chunks, input);
+					if (_p26.ctor === 'Err') {
+						return _elm_lang$core$Result$Err(_p26._0);
+					} else {
+						return _elm_lang$core$Result$Ok(
+							{
+								ctor: '_Tuple2',
+								_0: _p26._0._0,
+								_1: func(_p26._0._1)
+							});
+					}
+				}));
+	});
+
 var _user$project$BlogPost$fullView = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -8604,12 +9170,12 @@ var _user$project$StaticPage$view = function (model) {
 				model.content)
 			]));
 };
-var _user$project$StaticPage$Model = F4(
-	function (a, b, c, d) {
-		return {id: a, title: b, content: c, order: d};
+var _user$project$StaticPage$Model = F5(
+	function (a, b, c, d, e) {
+		return {id: a, title: b, content: c, slug: d, order: e};
 	});
-var _user$project$StaticPage$decode = A5(
-	_elm_lang$core$Json_Decode$object4,
+var _user$project$StaticPage$decode = A6(
+	_elm_lang$core$Json_Decode$object5,
 	_user$project$StaticPage$Model,
 	A2(
 		_elm_lang$core$Json_Decode$at,
@@ -8625,6 +9191,11 @@ var _user$project$StaticPage$decode = A5(
 		_elm_lang$core$Json_Decode$at,
 		_elm_lang$core$Native_List.fromArray(
 			['fields', 'content']),
+		_elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['fields', 'slug']),
 		_elm_lang$core$Json_Decode$string),
 	A2(
 		_elm_lang$core$Json_Decode$at,
@@ -8687,10 +9258,84 @@ var _user$project$ContentfulAPI$fetchBookReviews = function (page) {
 		A2(_evancz$elm_http$Http$get, decoder, url));
 };
 
+var _user$project$Router$toFragment = function (route) {
+	var _p0 = route;
+	switch (_p0.ctor) {
+		case 'Home':
+			return '';
+		case 'Blog':
+			return '#posts';
+		case 'Post':
+			return A2(_elm_lang$core$Basics_ops['++'], '#posts/', _p0._0);
+		case 'BookReviews':
+			return '#reviews';
+		case 'Review':
+			return A2(_elm_lang$core$Basics_ops['++'], '#reviews/', _p0._0);
+		default:
+			return A2(_elm_lang$core$Basics_ops['++'], '#pages/', _p0._0);
+	}
+};
+var _user$project$Router$Page = function (a) {
+	return {ctor: 'Page', _0: a};
+};
+var _user$project$Router$Review = function (a) {
+	return {ctor: 'Review', _0: a};
+};
+var _user$project$Router$BookReviews = {ctor: 'BookReviews'};
+var _user$project$Router$Post = function (a) {
+	return {ctor: 'Post', _0: a};
+};
+var _user$project$Router$Blog = {ctor: 'Blog'};
+var _user$project$Router$Home = {ctor: 'Home'};
+var _user$project$Router$routeParser = _evancz$url_parser$UrlParser$oneOf(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_user$project$Router$Home,
+			_evancz$url_parser$UrlParser$s('')),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_user$project$Router$Post,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('posts'),
+				_evancz$url_parser$UrlParser$string)),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_user$project$Router$Blog,
+			_evancz$url_parser$UrlParser$s('posts')),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_user$project$Router$Review,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('reviews'),
+				_evancz$url_parser$UrlParser$string)),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_user$project$Router$BookReviews,
+			_evancz$url_parser$UrlParser$s('reviews')),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_user$project$Router$Page,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('pages'),
+				_evancz$url_parser$UrlParser$string))
+		]));
+var _user$project$Router$fragmentParser = function (location) {
+	return A3(
+		_evancz$url_parser$UrlParser$parse,
+		_elm_lang$core$Basics$identity,
+		_user$project$Router$routeParser,
+		A2(_elm_lang$core$String$dropLeft, 1, location.hash));
+};
+
 var _user$project$MockData$pages = _elm_lang$core$Native_List.fromArray(
 	[
-		A4(_user$project$StaticPage$Model, '1', 'About Me', 'A page about me.', 1),
-		A4(_user$project$StaticPage$Model, '2', 'Hire Me', 'Hire me for my ideal job.', 2)
+		A5(_user$project$StaticPage$Model, '1', 'About Me', 'A page about me.', 'page-1', 1),
+		A5(_user$project$StaticPage$Model, '2', 'Hire Me', 'Hire me for my ideal job.', 'page-2', 2)
 	]);
 var _user$project$MockData$bookReviews = _elm_lang$core$Native_List.fromArray(
 	[
@@ -8815,79 +9460,15 @@ var _user$project$MockData$blogPosts = _elm_lang$core$Native_List.fromArray(
 var _user$project$BlogPostList$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$BlogPostList$update = F2(
-	function (action, model) {
-		var _p0 = action;
-		switch (_p0.ctor) {
-			case 'SelectPost':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							selected: _elm_lang$core$Maybe$Just(_p0._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'DeselectPost':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{selected: _elm_lang$core$Maybe$Nothing}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				if (_p0._0.ctor === 'FetchBlogPosts') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{posts: _p0._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-		}
-	});
-var _user$project$BlogPostList$Model = F2(
-	function (a, b) {
-		return {posts: a, selected: b};
-	});
-var _user$project$BlogPostList$DeselectPost = {ctor: 'DeselectPost'};
-var _user$project$BlogPostList$viewOne = function (post) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$button,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('back-button'),
-						_elm_lang$html$Html_Events$onClick(_user$project$BlogPostList$DeselectPost)
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Back to all posts')
-					])),
-				_user$project$BlogPost$fullView(post)
-			]));
-};
-var _user$project$BlogPostList$SelectPost = function (a) {
-	return {ctor: 'SelectPost', _0: a};
-};
 var _user$project$BlogPostList$postEntry = function (post) {
 	return A2(
-		_elm_lang$html$Html$p,
+		_elm_lang$html$Html$a,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('post-entry'),
-				_elm_lang$html$Html_Events$onClick(
-				_user$project$BlogPostList$SelectPost(post))
+				_elm_lang$html$Html_Attributes$href(
+				_user$project$Router$toFragment(
+					_user$project$Router$Post(post.id)))
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -8921,14 +9502,107 @@ var _user$project$BlogPostList$viewMany = function (posts) {
 				_user$project$BlogPostList$content(posts)
 			]));
 };
+var _user$project$BlogPostList$viewOne = function (post) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$a,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('back-button'),
+						_elm_lang$html$Html_Attributes$href(
+						_user$project$Router$toFragment(_user$project$Router$Blog))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Back to all posts')
+					])),
+				_user$project$BlogPost$fullView(post)
+			]));
+};
 var _user$project$BlogPostList$view = function (model) {
-	var _p1 = model.selected;
-	if (_p1.ctor === 'Just') {
-		return _user$project$BlogPostList$viewOne(_p1._0);
+	var _p0 = model.selected;
+	if (_p0.ctor === 'Just') {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$html$Html$text('No such post.'),
+			A2(
+				_elm_lang$core$Maybe$map,
+				_user$project$BlogPostList$viewOne,
+				_elm_lang$core$List$head(
+					A2(
+						_elm_lang$core$List$filter,
+						function (post) {
+							return _elm_lang$core$Native_Utils.eq(post.id, _p0._0);
+						},
+						model.posts))));
 	} else {
 		return _user$project$BlogPostList$viewMany(model.posts);
 	}
 };
+var _user$project$BlogPostList$update = F2(
+	function (action, model) {
+		var _p1 = action;
+		switch (_p1.ctor) {
+			case 'SelectPost':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selected: _elm_lang$core$Maybe$Just(_p1._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeselectPost':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{selected: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				if (_p1._0.ctor === 'FetchBlogPosts') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{posts: _p1._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
+var _user$project$BlogPostList$Model = F2(
+	function (a, b) {
+		return {posts: a, selected: b};
+	});
+var _user$project$BlogPostList$DeselectPost = {ctor: 'DeselectPost'};
+var _user$project$BlogPostList$SelectPost = function (a) {
+	return {ctor: 'SelectPost', _0: a};
+};
+var _user$project$BlogPostList$urlUpdate = F2(
+	function (route, model) {
+		var _p2 = route;
+		if (_p2.ctor === 'Post') {
+			var _p3 = _p2._0;
+			return A4(
+				_elm_lang$core$Debug$log,
+				A2(_elm_lang$core$Basics_ops['++'], 'Clicked blog post: ', _p3),
+				_user$project$BlogPostList$update,
+				_user$project$BlogPostList$SelectPost(_p3),
+				model);
+		} else {
+			return A2(_user$project$BlogPostList$update, _user$project$BlogPostList$DeselectPost, model);
+		}
+	});
 var _user$project$BlogPostList$Content = function (a) {
 	return {ctor: 'Content', _0: a};
 };
@@ -8945,79 +9619,15 @@ var _user$project$BlogPostList$init = function () {
 var _user$project$BookReviewList$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$BookReviewList$update = F2(
-	function (action, model) {
-		var _p0 = action;
-		switch (_p0.ctor) {
-			case 'SelectReview':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							selected: _elm_lang$core$Maybe$Just(_p0._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'DeselectReview':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{selected: _elm_lang$core$Maybe$Nothing}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				if (_p0._0.ctor === 'FetchBookReviews') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{reviews: _p0._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-		}
-	});
-var _user$project$BookReviewList$Model = F2(
-	function (a, b) {
-		return {reviews: a, selected: b};
-	});
-var _user$project$BookReviewList$DeselectReview = {ctor: 'DeselectReview'};
-var _user$project$BookReviewList$viewOne = function (review) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$button,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('back-button'),
-						_elm_lang$html$Html_Events$onClick(_user$project$BookReviewList$DeselectReview)
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Back to all reviews')
-					])),
-				_user$project$BookReview$fullView(review)
-			]));
-};
-var _user$project$BookReviewList$SelectReview = function (a) {
-	return {ctor: 'SelectReview', _0: a};
-};
 var _user$project$BookReviewList$reviewEntry = function (review) {
 	return A2(
-		_elm_lang$html$Html$p,
+		_elm_lang$html$Html$a,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('review-entry'),
-				_elm_lang$html$Html_Events$onClick(
-				_user$project$BookReviewList$SelectReview(review))
+				_elm_lang$html$Html_Attributes$href(
+				_user$project$Router$toFragment(
+					_user$project$Router$Review(review.id)))
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -9049,14 +9659,104 @@ var _user$project$BookReviewList$viewMany = function (reviews) {
 				_user$project$BookReviewList$content(reviews)
 			]));
 };
+var _user$project$BookReviewList$viewOne = function (review) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$a,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('back-button'),
+						_elm_lang$html$Html_Attributes$href(
+						_user$project$Router$toFragment(_user$project$Router$BookReviews))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Back to all reviews')
+					])),
+				_user$project$BookReview$fullView(review)
+			]));
+};
 var _user$project$BookReviewList$view = function (model) {
-	var _p1 = model.selected;
-	if (_p1.ctor === 'Just') {
-		return _user$project$BookReviewList$viewOne(_p1._0);
+	var _p0 = model.selected;
+	if (_p0.ctor === 'Just') {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$html$Html$text('No such review.'),
+			A2(
+				_elm_lang$core$Maybe$map,
+				_user$project$BookReviewList$viewOne,
+				_elm_lang$core$List$head(
+					A2(
+						_elm_lang$core$List$filter,
+						function (review) {
+							return _elm_lang$core$Native_Utils.eq(review.id, _p0._0);
+						},
+						model.reviews))));
 	} else {
 		return _user$project$BookReviewList$viewMany(model.reviews);
 	}
 };
+var _user$project$BookReviewList$update = F2(
+	function (action, model) {
+		var _p1 = action;
+		switch (_p1.ctor) {
+			case 'SelectReview':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selected: _elm_lang$core$Maybe$Just(_p1._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeselectReview':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{selected: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				if (_p1._0.ctor === 'FetchBookReviews') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{reviews: _p1._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
+var _user$project$BookReviewList$Model = F2(
+	function (a, b) {
+		return {reviews: a, selected: b};
+	});
+var _user$project$BookReviewList$DeselectReview = {ctor: 'DeselectReview'};
+var _user$project$BookReviewList$SelectReview = function (a) {
+	return {ctor: 'SelectReview', _0: a};
+};
+var _user$project$BookReviewList$urlUpdate = F2(
+	function (route, model) {
+		var _p2 = route;
+		if (_p2.ctor === 'Review') {
+			return A2(
+				_user$project$BookReviewList$update,
+				_user$project$BookReviewList$SelectReview(_p2._0),
+				model);
+		} else {
+			return A2(_user$project$BookReviewList$update, _user$project$BookReviewList$DeselectReview, model);
+		}
+	});
 var _user$project$BookReviewList$Content = function (a) {
 	return {ctor: 'Content', _0: a};
 };
@@ -9073,20 +9773,124 @@ var _user$project$BookReviewList$init = function () {
 var _user$project$Menu$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Menu$tabTitle = function (item) {
-	var _p0 = item;
-	switch (_p0.ctor) {
-		case 'BlogPosts':
-			return 'Blog';
-		case 'BookReviews':
-			return 'Book Reviews';
-		default:
-			return _p0._0.title;
-	}
-};
+var _user$project$Menu$isSelected = F2(
+	function (route, item) {
+		var _p0 = {ctor: '_Tuple2', _0: route, _1: item};
+		_v0_6:
+		do {
+			if (_p0.ctor === '_Tuple2') {
+				switch (_p0._1.ctor) {
+					case 'BlogPosts':
+						switch (_p0._0.ctor) {
+							case 'Home':
+								return true;
+							case 'Blog':
+								return true;
+							case 'Post':
+								return true;
+							default:
+								break _v0_6;
+						}
+					case 'BookReviews':
+						switch (_p0._0.ctor) {
+							case 'BookReviews':
+								return true;
+							case 'Review':
+								return true;
+							default:
+								break _v0_6;
+						}
+					default:
+						if (_p0._0.ctor === 'Page') {
+							return _elm_lang$core$Native_Utils.eq(_p0._1._0.slug, _p0._0._0);
+						} else {
+							break _v0_6;
+						}
+				}
+			} else {
+				break _v0_6;
+			}
+		} while(false);
+		return false;
+	});
+var _user$project$Menu$tabView = F2(
+	function (route, item) {
+		var classes = _elm_lang$html$Html_Attributes$classList(
+			_elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 'menu-item', _1: true},
+					{
+					ctor: '_Tuple2',
+					_0: 'selected',
+					_1: A2(_user$project$Menu$isSelected, route, item)
+				}
+				]));
+		var _p1 = item;
+		switch (_p1.ctor) {
+			case 'BlogPosts':
+				return A2(
+					_elm_lang$html$Html$li,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$href('#posts'),
+									classes
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text('Blog')
+								]))
+						]));
+			case 'BookReviews':
+				return A2(
+					_elm_lang$html$Html$li,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$href('#reviews'),
+									classes
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text('Bookshelf')
+								]))
+						]));
+			default:
+				var _p2 = _p1._0;
+				return A2(
+					_elm_lang$html$Html$li,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$href(
+									A2(_elm_lang$core$Basics_ops['++'], '#pages/', _p2.slug)),
+									classes
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text(_p2.title)
+								]))
+						]));
+		}
+	});
 var _user$project$Menu$Model = F4(
 	function (a, b, c, d) {
-		return {posts: a, reviews: b, pages: c, current: d};
+		return {posts: a, reviews: b, pages: c, route: d};
 	});
 var _user$project$Menu$Other = function (a) {
 	return {ctor: 'Other', _0: a};
@@ -9116,29 +9920,6 @@ var _user$project$Menu$UpdateBookReviews = function (a) {
 var _user$project$Menu$UpdateBlog = function (a) {
 	return {ctor: 'UpdateBlog', _0: a};
 };
-var _user$project$Menu$init = function () {
-	var _p1 = _user$project$BookReviewList$init;
-	var reviews = _p1._0;
-	var reviewsCmd = _p1._1;
-	var _p2 = _user$project$BlogPostList$init;
-	var posts = _p2._0;
-	var postsCmd = _p2._1;
-	var model = {posts: posts, reviews: reviews, pages: _user$project$MockData$pages, current: 0};
-	var commands = _elm_lang$core$Native_List.fromArray(
-		[
-			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBlog, postsCmd),
-			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBookReviews, reviewsCmd),
-			A2(
-			_elm_lang$core$Platform_Cmd$map,
-			_user$project$Menu$Content,
-			_user$project$ContentfulAPI$fetchPages(0))
-		]);
-	return {
-		ctor: '_Tuple2',
-		_0: model,
-		_1: _elm_lang$core$Platform_Cmd$batch(commands)
-	};
-}();
 var _user$project$Menu$update = F2(
 	function (action, model) {
 		var _p3 = action;
@@ -9148,7 +9929,7 @@ var _user$project$Menu$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{current: _p3._0}),
+						{route: _p3._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateBlog':
@@ -9187,21 +9968,86 @@ var _user$project$Menu$update = F2(
 				}
 		}
 	});
+var _user$project$Menu$urlUpdate = F2(
+	function (result, model) {
+		var _p6 = result;
+		if (_p6.ctor === 'Err') {
+			return A2(
+				_elm_lang$core$Debug$log,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'Routing error: ',
+					_elm_lang$core$Basics$toString(_p6._0)),
+				{
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$modifyUrl(
+						_user$project$Router$toFragment(model.route))
+				});
+		} else {
+			var _p9 = _p6._0;
+			var _p7 = A2(_user$project$BookReviewList$urlUpdate, _p9, model.reviews);
+			var reviews = _p7._0;
+			var reviewsCmd = _p7._1;
+			var _p8 = A2(_user$project$BlogPostList$urlUpdate, _p9, model.posts);
+			var posts = _p8._0;
+			var postsCmd = _p8._1;
+			var commands = _elm_lang$core$Native_List.fromArray(
+				[
+					A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBlog, postsCmd),
+					A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBookReviews, reviewsCmd)
+				]);
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{posts: posts, reviews: reviews, route: _p9}),
+				_1: _elm_lang$core$Platform_Cmd$batch(commands)
+			};
+		}
+	});
+var _user$project$Menu$init = function (result) {
+	var _p10 = _user$project$BookReviewList$init;
+	var reviews = _p10._0;
+	var reviewsCmd = _p10._1;
+	var _p11 = _user$project$BlogPostList$init;
+	var posts = _p11._0;
+	var postsCmd = _p11._1;
+	var initialModel = {posts: posts, reviews: reviews, pages: _user$project$MockData$pages, route: _user$project$Router$Home};
+	var _p12 = A2(_user$project$Menu$urlUpdate, result, initialModel);
+	var model = _p12._0;
+	var urlCommands = _p12._1;
+	var commands = _elm_lang$core$Native_List.fromArray(
+		[
+			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBlog, postsCmd),
+			A2(_elm_lang$core$Platform_Cmd$map, _user$project$Menu$UpdateBookReviews, reviewsCmd),
+			A2(
+			_elm_lang$core$Platform_Cmd$map,
+			_user$project$Menu$Content,
+			_user$project$ContentfulAPI$fetchPages(0)),
+			urlCommands
+		]);
+	return {
+		ctor: '_Tuple2',
+		_0: model,
+		_1: _elm_lang$core$Platform_Cmd$batch(commands)
+	};
+};
 var _user$project$Menu$contentView = function (item) {
-	var _p6 = item;
-	switch (_p6.ctor) {
+	var _p13 = item;
+	switch (_p13.ctor) {
 		case 'BlogPosts':
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Menu$UpdateBlog,
-				_user$project$BlogPostList$view(_p6._0));
+				_user$project$BlogPostList$view(_p13._0));
 		case 'BookReviews':
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Menu$UpdateBookReviews,
-				_user$project$BookReviewList$view(_p6._0));
+				_user$project$BookReviewList$view(_p13._0));
 		default:
-			return _user$project$StaticPage$view(_p6._0);
+			return _user$project$StaticPage$view(_p13._0);
 	}
 };
 var _user$project$Menu$content = function (model) {
@@ -9211,44 +10057,16 @@ var _user$project$Menu$content = function (model) {
 		A2(
 			_elm_lang$core$Maybe$map,
 			_user$project$Menu$contentView,
-			A2(
-				_elm_lang$core$Array$get,
-				model.current,
-				_elm_lang$core$Array$fromList(
+			_elm_lang$core$List$head(
+				A2(
+					_elm_lang$core$List$filter,
+					_user$project$Menu$isSelected(model.route),
 					_user$project$Menu$tabs(model)))));
 };
-var _user$project$Menu$SelectItem = function (a) {
-	return {ctor: 'SelectItem', _0: a};
-};
-var _user$project$Menu$tabView = F3(
-	function (selected, index, item) {
-		return A2(
-			_elm_lang$html$Html$li,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Events$onClick(
-					_user$project$Menu$SelectItem(index)),
-					_elm_lang$html$Html_Attributes$classList(
-					_elm_lang$core$Native_List.fromArray(
-						[
-							{ctor: '_Tuple2', _0: 'menu-item', _1: true},
-							{
-							ctor: '_Tuple2',
-							_0: 'selected',
-							_1: _elm_lang$core$Native_Utils.eq(selected, index)
-						}
-						]))
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html$text(
-					_user$project$Menu$tabTitle(item))
-				]));
-	});
 var _user$project$Menu$view = function (model) {
 	var tabViews = A2(
-		_elm_lang$core$List$indexedMap,
-		_user$project$Menu$tabView(model.current),
+		_elm_lang$core$List$map,
+		_user$project$Menu$tabView(model.route),
 		_user$project$Menu$tabs(model));
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9306,10 +10124,15 @@ var _user$project$Menu$view = function (model) {
 					]))
 			]));
 };
+var _user$project$Menu$SelectItem = function (a) {
+	return {ctor: 'SelectItem', _0: a};
+};
 
 var _user$project$Main$main = {
-	main: _elm_lang$html$Html_App$program(
-		{init: _user$project$Menu$init, view: _user$project$Menu$view, update: _user$project$Menu$update, subscriptions: _user$project$Menu$subscriptions})
+	main: A2(
+		_elm_lang$navigation$Navigation$program,
+		_elm_lang$navigation$Navigation$makeParser(_user$project$Router$fragmentParser),
+		{init: _user$project$Menu$init, view: _user$project$Menu$view, update: _user$project$Menu$update, urlUpdate: _user$project$Menu$urlUpdate, subscriptions: _user$project$Menu$subscriptions})
 };
 
 var Elm = {};

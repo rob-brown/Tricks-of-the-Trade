@@ -1,12 +1,14 @@
 module Main exposing (main)
 
-import Html.App as App
 import Menu
+import Router
+import Navigation
 
 main =
-  App.program
+  Navigation.program (Navigation.makeParser Router.fragmentParser)
     { init = Menu.init
     , view = Menu.view
     , update = Menu.update
+    , urlUpdate = Menu.urlUpdate
     , subscriptions = Menu.subscriptions
     }

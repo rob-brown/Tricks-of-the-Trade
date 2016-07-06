@@ -25,7 +25,7 @@ body {
 }
 
 .book-title {
-  /*font-family: "Arial Black", sans-serif;*/
+
 }
 
 .book-subtitle {
@@ -59,8 +59,6 @@ body {
 
 #menu {
   background-color: #003865;
-  margin: 0;
-  height: 41px;
 }
 
 #menu ul {
@@ -70,17 +68,18 @@ body {
 }
 
 #menu ul li {
+  display: inline-block;
+}
+
+#menu ul li a.menu-item {
   border-color: #005498;
   display: inline-block;
+  text-decoration: none;
   padding: 10px 20px 10px 20px;
   color: #ddd;
 }
 
-#menu ul li.menu-item:hover {
-  background-color: #005498;
-}
-
-#menu ul li.selected {
+#menu ul li a.menu-item:hover, #menu ul li a.selected {
   background-color: #005498;
 }
 
