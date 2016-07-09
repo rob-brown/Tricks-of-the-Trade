@@ -87,10 +87,7 @@ viewOne post =
 
 viewMany : List BlogPost.Model -> Html Msg
 viewMany posts =
-  div [class "post-list"]
-    [ h1 [] [text "Blog"]
-    , content posts
-    ]
+  div [class "post-list"] [ content posts ]
 
 content : List BlogPost.Model -> Html Msg
 content posts =

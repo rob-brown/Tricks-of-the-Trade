@@ -86,10 +86,7 @@ viewOne review =
 
 viewMany : List BookReview.Model -> Html Msg
 viewMany reviews =
-  div [class "review-list"]
-    [ h1 [] [text "Book Reviews"]
-    , content reviews
-    ]
+  div [class "review-list"] [ content reviews ]
 
 content : List BookReview.Model -> Html Msg
 content reviews =

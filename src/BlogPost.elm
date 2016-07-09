@@ -40,7 +40,7 @@ compactView model =
 
 fullView : Model -> Html a
 fullView model =
-  div [class "full-post"]
+  article [class "full-post"]
     [ h3 [class "post-title"] [text model.title]
     , h5 [class "post-summary"] [Markdown.toHtml [] (Maybe.withDefault "" model.summary)]
     , Markdown.toHtml [class "post-body"] model.entry

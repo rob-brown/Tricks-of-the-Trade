@@ -8733,7 +8733,7 @@ var _evancz$url_parser$UrlParser$format = F2(
 
 var _user$project$BlogPost$fullView = function (model) {
 	return A2(
-		_elm_lang$html$Html$div,
+		_elm_lang$html$Html$article,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('full-post')
@@ -9026,7 +9026,7 @@ var _user$project$ContentfulEndpoint$BookReviews = function (a) {
 
 var _user$project$BookReview$fullView = function (model) {
 	return A2(
-		_elm_lang$html$Html$div,
+		_elm_lang$html$Html$article,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('full-review')
@@ -9146,7 +9146,7 @@ var _user$project$BookReview$decode = A7(
 
 var _user$project$StaticPage$view = function (model) {
 	return A2(
-		_elm_lang$html$Html$div,
+		_elm_lang$html$Html$article,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
 		_elm_lang$core$Native_List.fromArray(
@@ -9361,14 +9361,6 @@ var _user$project$BlogPostList$viewMany = function (posts) {
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(
-				_elm_lang$html$Html$h1,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Blog')
-					])),
 				_user$project$BlogPostList$content(posts)
 			]));
 };
@@ -9521,14 +9513,6 @@ var _user$project$BookReviewList$viewMany = function (reviews) {
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(
-				_elm_lang$html$Html$h1,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Book Reviews')
-					])),
 				_user$project$BookReviewList$content(reviews)
 			]));
 };

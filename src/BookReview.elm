@@ -42,7 +42,7 @@ compactView model =
 
 fullView : Model -> Html a
 fullView model =
-  div [class "full-review"]
+  article [class "full-review"]
     [ h3 [class "book-title"] [text model.title]
     , h4 [class "book-subtitle"] [text (Maybe.withDefault "" model.subtitle)]
     , h5 [class "book-author"] [text ("by " ++ model.author)]
