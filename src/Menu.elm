@@ -163,4 +163,8 @@ isSelected route item =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  let
+    blogSubs = Sub.map UpdateBlog (BlogPostList.subscriptions model.posts)
+    reviewSubs = Sub.map UpdateBookReviews (BookReviewList.subscriptions model.reviews)
+  in
+    Sub.batch [blogSubs, reviewSubs]

@@ -17,19 +17,21 @@ import Task
 import BlogPost
 import ContentfulAPI
 import Router
+import Kitt
 
 -- MODEL
 
 type alias Model =
   { posts: List BlogPost.Model
   , selected: Maybe String
+  , loadingModel: Kitt.Model
   }
 
 init : (Model, Cmd Msg)
 init =
   let
     posts = []
-    model = { posts=posts, selected=Nothing }
+    model = { posts=posts, selected=Nothing, loadingModel=Kitt.init }
     command = Cmd.map Content (ContentfulAPI.fetchBlogPosts 0)
   in
     (model, command)
@@ -40,6 +42,7 @@ type Msg
   = Content ContentfulAPI.Msg
   | SelectPost String
   | DeselectPost
+  | UpdateLoader Kitt.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
@@ -50,6 +53,10 @@ update action model =
       ({ model | selected=Nothing }, Cmd.none)
     Content (ContentfulAPI.FetchBlogPosts posts) ->
       ({ model | posts=posts }, Cmd.none)
+    UpdateLoader subaction ->
+      let loadingModel = Kitt.update subaction model.loadingModel
+      in
+        ({ model | loadingModel=loadingModel }, Cmd.none)
     _ ->
       (model, Cmd.none)
 
@@ -74,7 +81,7 @@ view model =
       |> Maybe.map viewOne
       |> Maybe.withDefault (text "No such post.")
     Nothing ->
-      viewMany model.posts
+      viewMany model
 
 viewOne : BlogPost.Model -> Html Msg
 viewOne post =
@@ -85,16 +92,24 @@ viewOne post =
       , BlogPost.fullView post
       ]
 
-viewMany : List BlogPost.Model -> Html Msg
-viewMany posts =
-  div [class "post-list"] [ content posts ]
+viewMany : Model -> Html Msg
+viewMany model =
+  div [class "post-list"] [ content model ]
 
-content : List BlogPost.Model -> Html Msg
-content posts =
-  if List.isEmpty posts then
-    text "Loading Blog Posts"
+content : Model -> Html Msg
+content model =
+  if showLoadingView model then
+    loadingView model
   else
-    div [] (List.map postEntry posts)
+    div [] (List.map postEntry model.posts)
+
+showLoadingView : Model -> Bool
+showLoadingView model =
+  List.isEmpty model.posts
+
+loadingView : Model -> Html Msg
+loadingView model =
+  Kitt.view model.loadingModel
 
 postEntry : BlogPost.Model -> Html Msg
 postEntry post =
@@ -106,4 +121,7 @@ postEntry post =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  if showLoadingView model then
+    Sub.map UpdateLoader (Kitt.subscriptions model.loadingModel)
+  else
+    Sub.none
