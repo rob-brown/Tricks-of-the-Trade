@@ -17,71 +17,51 @@ import Task
 import BlogPost
 import ContentfulAPI
 import Router
-import Kitt
+import PagableContent
 
 -- MODEL
 
-type alias Model =
-  { posts: List BlogPost.Model
-  , selected: Maybe String
-  , loadingModel: Kitt.Model
-  }
+type alias Model = PagableContent.Model BlogPost.Model String
 
 init : (Model, Cmd Msg)
 init =
-  let
-    posts = []
-    model = { posts=posts, selected=Nothing, loadingModel=Kitt.init }
-    command = Cmd.map Content (ContentfulAPI.fetchBlogPosts 0)
+  let model = PagableContent.init [] Nothing viewOne viewMany .slug
   in
-    (model, command)
+    (model, initialContent)
+
+initialContent : Cmd Msg
+initialContent =
+  (ContentfulAPI.fetchBlogPosts 0)
+  |> Cmd.map (\result ->
+      case result of
+        ContentfulAPI.FetchBlogPosts posts ->
+          PagableContent.AddItems posts
+        _ ->
+          PagableContent.NoOp
+    )
 
 -- UPDATE
 
-type Msg
-  = Content ContentfulAPI.Msg
-  | SelectPost String
-  | DeselectPost
-  | UpdateLoader Kitt.Msg
+type alias Msg = PagableContent.Msg BlogPost.Model String
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
-  case action of
-    SelectPost slug ->
-      ({ model | selected=Just slug }, Cmd.none)
-    DeselectPost ->
-      ({ model | selected=Nothing }, Cmd.none)
-    Content (ContentfulAPI.FetchBlogPosts posts) ->
-      ({ model | posts=posts }, Cmd.none)
-    UpdateLoader subaction ->
-      let loadingModel = Kitt.update subaction model.loadingModel
-      in
-        ({ model | loadingModel=loadingModel }, Cmd.none)
-    _ ->
-      (model, Cmd.none)
+  (PagableContent.update action model, Cmd.none)
 
 urlUpdate : Router.Route -> Model -> (Model, Cmd Msg)
 urlUpdate route model =
   case route of
     Router.Post slug ->
       Debug.log ("Clicked blog post: " ++ slug)
-      update (SelectPost slug) model
+      update (PagableContent.SelectItem slug) model
     _ ->
-      update DeselectPost model
+      update PagableContent.DeselectItem model
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  case model.selected of
-    Just slug ->
-      model.posts
-      |> List.filter (\post -> post.slug == slug)
-      |> List.head
-      |> Maybe.map viewOne
-      |> Maybe.withDefault (text "No such post.")
-    Nothing ->
-      viewMany model
+  PagableContent.view model
 
 viewOne : BlogPost.Model -> Html Msg
 viewOne post =
@@ -92,24 +72,13 @@ viewOne post =
       , BlogPost.fullView post
       ]
 
-viewMany : Model -> Html Msg
-viewMany model =
-  div [class "post-list"] [ content model ]
+viewMany : List BlogPost.Model -> Html Msg
+viewMany posts =
+  div [class "post-list"] [ content posts ]
 
-content : Model -> Html Msg
-content model =
-  if showLoadingView model then
-    loadingView model
-  else
-    div [] (List.map postEntry model.posts)
-
-showLoadingView : Model -> Bool
-showLoadingView model =
-  List.isEmpty model.posts
-
-loadingView : Model -> Html Msg
-loadingView model =
-  Kitt.view model.loadingModel
+content : List BlogPost.Model -> Html Msg
+content posts =
+  div [] (List.map postEntry posts)
 
 postEntry : BlogPost.Model -> Html Msg
 postEntry post =
@@ -121,7 +90,4 @@ postEntry post =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  if showLoadingView model then
-    Sub.map UpdateLoader (Kitt.subscriptions model.loadingModel)
-  else
-    Sub.none
+  PagableContent.subscriptions model

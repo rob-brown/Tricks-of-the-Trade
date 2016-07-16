@@ -17,63 +17,51 @@ import Task
 import BookReview
 import ContentfulAPI
 import Router
+import PagableContent
 
 -- MODEL
 
-type alias Model =
-  { reviews: List BookReview.Model
-  , selected: Maybe String
-  }
+type alias Model = PagableContent.Model BookReview.Model String
 
 init : (Model, Cmd Msg)
 init =
-  let
-    reviews = []
-    model = { reviews=reviews, selected=Nothing }
-    command = Cmd.map Content (ContentfulAPI.fetchBookReviews 0)
+  let model = PagableContent.init [] Nothing viewOne viewMany .slug
   in
-    (model, command)
+    (model, initialContent)
+
+initialContent : Cmd Msg
+initialContent =
+  (ContentfulAPI.fetchBookReviews 0)
+  |> Cmd.map (\result ->
+      case result of
+        ContentfulAPI.FetchBookReviews reviews ->
+          PagableContent.AddItems reviews
+        _ ->
+          PagableContent.NoOp
+    )
 
 -- UPDATE
 
-type Msg
-  = Content ContentfulAPI.Msg
-  | SelectReview String
-  | DeselectReview
+type alias Msg = PagableContent.Msg BookReview.Model String
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
-  case action of
-    SelectReview slug ->
-      ({ model | selected=Just slug }, Cmd.none)
-    DeselectReview ->
-      ({ model | selected=Nothing }, Cmd.none)
-    Content (ContentfulAPI.FetchBookReviews reviews) ->
-      ({ model | reviews=reviews }, Cmd.none)
-    _ ->
-      (model, Cmd.none)
+  (PagableContent.update action model, Cmd.none)
 
 urlUpdate : Router.Route -> Model -> (Model, Cmd Msg)
 urlUpdate route model =
   case route of
     Router.Review slug ->
-      update (SelectReview slug) model
+      Debug.log ("Clicked book review: " ++ slug)
+      update (PagableContent.SelectItem slug) model
     _ ->
-      update DeselectReview model
+      update PagableContent.DeselectItem model
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  case model.selected of
-    Just slug ->
-      model.reviews
-      |> List.filter (\review -> review.slug == slug)
-      |> List.head
-      |> Maybe.map viewOne
-      |> Maybe.withDefault (text "No such review.")
-    Nothing ->
-      viewMany model.reviews
+  PagableContent.view model
 
 viewOne : BookReview.Model -> Html Msg
 viewOne review =
@@ -105,4 +93,4 @@ reviewEntry review =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  PagableContent.subscriptions model
