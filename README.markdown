@@ -6,6 +6,8 @@ This repo holds the code for my personal website. This is not meant to be a plug
 
 * Animation
 * Commands
+* Composition
+* Generics
 * HTTP
 * JSON
 * Navigation
