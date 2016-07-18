@@ -36,7 +36,7 @@
 
 }
 
-.post-entry, .review-entry, .post-entry:hover, .review-entry:hover {
+.post-entry, .review-entry, .presentation-entry, .post-entry:hover, .review-entry:hover, .presentation-entry:hover {
   color: black;
 }
 

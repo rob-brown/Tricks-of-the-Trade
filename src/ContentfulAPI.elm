@@ -1,7 +1,8 @@
 module ContentfulAPI exposing
-  ( Msg(FetchBookReviews, FetchBlogPosts, FetchPages, FetchFail)
+  ( Msg(FetchBookReviews, FetchBlogPosts, FetchPages, FetchPresentations, FetchFail)
   , fetchBookReviews
   , fetchBlogPosts
+  , fetchPresentations
   , fetchPages
   )
 
@@ -12,11 +13,13 @@ import ContentfulEndpoint
 import BookReview
 import BlogPost
 import StaticPage
+import Presentation
 
 type Msg
   = FetchBookReviews (List BookReview.Model)
   | FetchBlogPosts (List BlogPost.Model)
   | FetchPages (List StaticPage.Model)
+  | FetchPresentations (List Presentation.Model)
   | FetchFail Http.Error
 
 fetchBookReviews : ContentfulEndpoint.Page -> Cmd Msg
@@ -42,3 +45,11 @@ fetchPages page =
     decoder = Json.at ["items"] (Json.list StaticPage.decode)
   in
     Task.perform FetchFail FetchPages (Http.get decoder url)
+
+fetchPresentations : ContentfulEndpoint.Page -> Cmd Msg
+fetchPresentations page =
+  let
+    url = ContentfulEndpoint.url (ContentfulEndpoint.Presentations page)
+    decoder = Json.at ["items"] (Json.list Presentation.decode)
+  in
+    Task.perform FetchFail FetchPresentations (Http.get decoder url)

@@ -16,6 +16,7 @@ import Navigation
 import StaticPage
 import BookReviewList
 import BlogPostList
+import PresentationList
 import ContentfulAPI
 import Router
 
@@ -24,11 +25,13 @@ import Router
 type MenuItem
   = BlogPosts BlogPostList.Model
   | BookReviews BookReviewList.Model
+  | Presentations PresentationList.Model
   | Other StaticPage.Model
 
 type alias Model =
   { posts: BlogPostList.Model
   , reviews: BookReviewList.Model
+  , presentations: PresentationList.Model
   , pages: List StaticPage.Model
   , route: Router.Route
   }
@@ -38,11 +41,19 @@ init result =
   let
     (posts, postsCmd) = BlogPostList.init
     (reviews, reviewsCmd) = BookReviewList.init
-    initialModel = { posts=posts, reviews=reviews, pages=[], route=Router.Home }
+    (presentations, presentationsCmd) = PresentationList.init
+    initialModel =
+      { posts=posts
+      , reviews=reviews
+      , presentations=presentations
+      , pages=[]
+      , route=Router.Home
+      }
     (model, urlCommands) = urlUpdate result initialModel
     commands =
       [ Cmd.map UpdateBlog postsCmd
       , Cmd.map UpdateBookReviews reviewsCmd
+      , Cmd.map UpdatePresentations presentationsCmd
       , Cmd.map Content (ContentfulAPI.fetchPages 0)
       , urlCommands
       ]
@@ -55,6 +66,7 @@ type Msg
   = SelectItem Router.Route
   | UpdateBlog BlogPostList.Msg
   | UpdateBookReviews BookReviewList.Msg
+  | UpdatePresentations PresentationList.Msg
   | Content ContentfulAPI.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -70,6 +82,10 @@ update action model =
       let (reviews, command) = BookReviewList.update subaction model.reviews
       in
         ({ model | reviews=reviews }, Cmd.map UpdateBookReviews command)
+    UpdatePresentations subaction ->
+      let (presentations, command) = PresentationList.update subaction model.presentations
+      in
+        ({ model | presentations=presentations }, Cmd.map UpdatePresentations command)
     Content (ContentfulAPI.FetchPages pages) ->
       ({ model | pages=pages }, Cmd.none)
     _ ->
@@ -85,9 +101,14 @@ urlUpdate result model =
       let
         (posts, postsCmd) = BlogPostList.urlUpdate route model.posts
         (reviews, reviewsCmd) = BookReviewList.urlUpdate route model.reviews
-        commands = [Cmd.map UpdateBlog postsCmd, Cmd.map UpdateBookReviews reviewsCmd]
+        (presentations, presentationsCmd) = PresentationList.urlUpdate route model.presentations
+        commands =
+          [ Cmd.map UpdateBlog postsCmd
+          , Cmd.map UpdateBookReviews reviewsCmd
+          , Cmd.map UpdatePresentations presentationsCmd
+          ]
       in
-        ({ model | posts=posts, reviews=reviews, route=route }, Cmd.batch commands)
+        ({ model | posts=posts, reviews=reviews, presentations=presentations, route=route }, Cmd.batch commands)
 
 -- VIEW
 
@@ -118,12 +139,14 @@ contentView item =
       App.map UpdateBlog (BlogPostList.view posts)
     BookReviews reviews ->
       App.map UpdateBookReviews (BookReviewList.view reviews)
+    Presentations presentations ->
+      App.map UpdatePresentations (PresentationList.view presentations)
     Other page ->
       StaticPage.view page
 
 tabs : Model -> List MenuItem
 tabs model =
-  [BlogPosts model.posts, BookReviews model.reviews] ++ List.map Other model.pages
+  [BlogPosts model.posts, BookReviews model.reviews, Presentations model.presentations] ++ List.map Other model.pages
 
 tabView : Router.Route -> MenuItem -> Html Msg
 tabView route item =
@@ -138,6 +161,8 @@ tabView route item =
         li [] [a [href "#posts", classes] [text "Blog"]]
       BookReviews _ ->
         li [] [a [href "#reviews", classes] [text "Bookshelf"]]
+      Presentations _ ->
+        li [] [a [href "#presentations", classes] [text "Presentations"]]
       Other page ->
         li [] [a [href ("#pages/" ++ page.slug), classes] [text page.title]]
 
@@ -154,6 +179,10 @@ isSelected route item =
       True
     (Router.Review _, BookReviews _) ->
       True
+    (Router.Presentations, Presentations _) ->
+      True
+    (Router.Presentation _, Presentations _) ->
+      True
     (Router.Page slug, Other page) ->
       page.slug == slug
     _ ->
@@ -166,5 +195,6 @@ subscriptions model =
   let
     blogSubs = Sub.map UpdateBlog (BlogPostList.subscriptions model.posts)
     reviewSubs = Sub.map UpdateBookReviews (BookReviewList.subscriptions model.reviews)
+    presentationSubs = Sub.map UpdatePresentations (PresentationList.subscriptions model.presentations)
   in
-    Sub.batch [blogSubs, reviewSubs]
+    Sub.batch [blogSubs, reviewSubs, presentationSubs]

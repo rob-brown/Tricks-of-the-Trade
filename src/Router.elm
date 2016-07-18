@@ -10,6 +10,8 @@ type Route
   | Post String
   | BookReviews
   | Review String
+  | Presentations
+  | Presentation String
   | Page String
 
 toFragment : Route -> String
@@ -25,6 +27,10 @@ toFragment route =
       "#reviews"
     Review slug ->
       "#reviews/" ++ slug
+    Presentation slug ->
+      "#presentations/" ++ slug
+    Presentations ->
+      "#presentations"
     Page slug ->
       "#pages/" ++ slug
 
@@ -40,5 +46,7 @@ routeParser =
     , format Blog (s "posts")
     , format Review (s "reviews" </> string)
     , format BookReviews (s "reviews")
+    , format Presentation (s "presentations" </> string)
+    , format Presentations (s "presentations")
     , format Page (s "pages" </> string)
     ]
