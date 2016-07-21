@@ -135,11 +135,11 @@ tabView route item =
   in
     case item of
       BlogPosts _ ->
-        li [] [a [href "#posts", classes] [text "Blog"]]
+        li [] [a [href (Router.toFragment Router.Blog), classes] [text "Blog"]]
       BookReviews _ ->
-        li [] [a [href "#reviews", classes] [text "Bookshelf"]]
+        li [] [a [href (Router.toFragment Router.BookReviews), classes] [text "Bookshelf"]]
       Other page ->
-        li [] [a [href ("#pages/" ++ page.slug), classes] [text page.title]]
+        li [] [a [href (Router.toFragment (Router.Page page.slug)), classes] [text page.title]]
 
 isSelected : Router.Route -> MenuItem -> Bool
 isSelected route item =
