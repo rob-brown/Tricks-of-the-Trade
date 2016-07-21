@@ -31,6 +31,6 @@ decode =
 view : Model -> Html a
 view model =
   article []
-    [ h3 [class "post-title"] [text model.title]
+    [ h2 [class "post-title"] [text model.title]
     , Markdown.toHtml [class "post-entry"] model.content
     ]
