@@ -7,6 +7,8 @@ module BlogPost exposing
 
 import Json.Decode as Json
 import Markdown
+import String
+import Date exposing (Date)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
@@ -35,6 +37,7 @@ compactView : Model -> Html a
 compactView model =
   div [class "compact-post"]
     [ h3 [class "post-title"] [text model.title]
+    , h5 [class "date"] [formatDate model]
     , h5 [class "post-summary"] [Markdown.toHtml [] (Maybe.withDefault "" model.summary)]
     ]
 
@@ -42,6 +45,24 @@ fullView : Model -> Html a
 fullView model =
   article [class "full-post"]
     [ h3 [class "post-title"] [text model.title]
-    , h5 [class "post-summary"] [Markdown.toHtml [] (Maybe.withDefault "" model.summary)]
+    , h5 [class "date"] [formatDate model]
+    , h4 [class "post-summary"] [Markdown.toHtml [] (Maybe.withDefault "" model.summary)]
     , Markdown.toHtml [class "post-body"] model.entry
     ]
+
+formatDate : Model -> Html a
+formatDate model =
+  model.date
+  |> Date.fromString
+  |> Result.map dateToString
+  |> Result.withDefault ""
+  |> text
+
+dateToString : Date -> String
+dateToString date =
+  let
+    day = date |> Date.day |> toString
+    month = date |> Date.month |> toString
+    year = date |> Date.year |> toString
+  in
+    String.join " " [day, month, year]
