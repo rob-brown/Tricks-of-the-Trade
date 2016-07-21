@@ -78,6 +78,7 @@ urlInfo endpoint =
         ( Uri.path ["spaces", spaceID, "entries"]
         , [( "access_token", accessToken)
            , ("content_type", "page")
+           , ("order", "fields.order")
            , ("limit", limit)
            , ("skip", (toString page))
            ]
