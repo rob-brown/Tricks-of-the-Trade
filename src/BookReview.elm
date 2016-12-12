@@ -23,7 +23,7 @@ type alias Model =
 
 decode : Json.Decoder Model
 decode =
-  Json.object6 Model
+  Json.map6 Model
     (Json.at ["fields", "slug"] Json.string)
     (Json.at ["fields", "bookTitle"] Json.string)
     (Json.at ["fields", "bookSubtitle"] (Json.maybe Json.string))

@@ -8,7 +8,6 @@ module Kitt exposing
   )
 
 import Html exposing (Html)
-import Html.App
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, second)
@@ -17,7 +16,7 @@ import Color exposing (Color)
 import String
 
 main =
-  Html.App.program
+  Html.program
     { init=(init, Cmd.none)
     , update=(\a m -> (update a m, Cmd.none))
     , view=view

@@ -9,7 +9,6 @@ module BlogPostList exposing
   )
 
 import Html exposing (..)
-import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http

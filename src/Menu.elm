@@ -1,6 +1,7 @@
 module Menu exposing
   ( MenuItem(BlogPosts, BookReviews, Other)
   , Model
+  , Msg(..)
   , init
   , update
   , urlUpdate
@@ -9,7 +10,6 @@ module Menu exposing
   )
 
 import Html exposing (..)
-import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Navigation
@@ -33,13 +33,14 @@ type alias Model =
   , route: Router.Route
   }
 
-init : Result String Router.Route -> (Model, Cmd Msg)
-init result =
+init : Navigation.Location -> (Model, Cmd Msg)
+init location =
   let
     (posts, postsCmd) = BlogPostList.init
     (reviews, reviewsCmd) = BookReviewList.init
     initialModel = { posts=posts, reviews=reviews, pages=[], route=Router.Home }
-    (model, urlCommands) = urlUpdate result initialModel
+    route = Router.fragmentParser location
+    (model, urlCommands) = urlUpdate route initialModel
     commands =
       [ Cmd.map UpdateBlog postsCmd
       , Cmd.map UpdateBookReviews reviewsCmd
@@ -47,6 +48,7 @@ init result =
       , urlCommands
       ]
   in
+    Debug.log ("Init with location: " ++ (toString location))
     (model, Cmd.batch commands)
 
 -- UPDATE
@@ -56,6 +58,7 @@ type Msg
   | UpdateBlog BlogPostList.Msg
   | UpdateBookReviews BookReviewList.Msg
   | Content ContentfulAPI.Msg
+  | UrlChange Navigation.Location
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
@@ -72,16 +75,21 @@ update action model =
         ({ model | reviews=reviews }, Cmd.map UpdateBookReviews command)
     Content (ContentfulAPI.FetchPages pages) ->
       ({ model | pages=pages }, Cmd.none)
+    UrlChange location ->
+      let route = Router.fragmentParser location
+      in
+        Debug.log ("Update with location: " ++ (toString location))
+        urlUpdate route model
     _ ->
       (model, Cmd.none)
 
-urlUpdate : Result String Router.Route -> Model -> (Model, Cmd Msg)
-urlUpdate result model =
-  case result of
-    Err error ->
-      Debug.log ("Routing error: " ++ (toString error))
+urlUpdate : Maybe Router.Route -> Model -> (Model, Cmd Msg)
+urlUpdate maybeRoute model =
+  case maybeRoute of
+    Nothing ->
+      Debug.log "Routing error!"
       (model, Navigation.modifyUrl (Router.toFragment model.route))
-    Ok route ->
+    Just route ->
       let
         (posts, postsCmd) = BlogPostList.urlUpdate route model.posts
         (reviews, reviewsCmd) = BookReviewList.urlUpdate route model.reviews
@@ -115,9 +123,9 @@ contentView : MenuItem -> Html Msg
 contentView item =
   case item of
     BlogPosts posts ->
-      App.map UpdateBlog (BlogPostList.view posts)
+      Html.map UpdateBlog (BlogPostList.view posts)
     BookReviews reviews ->
-      App.map UpdateBookReviews (BookReviewList.view reviews)
+      Html.map UpdateBookReviews (BookReviewList.view reviews)
     Other page ->
       StaticPage.view page
 

@@ -2,7 +2,7 @@ module Router exposing (..)
 
 import Navigation
 import String
-import UrlParser exposing (Parser, (</>), format, int, oneOf, s, string)
+import UrlParser exposing (Parser, (</>), int, oneOf, s, string)
 
 type Route
   = Home
@@ -28,17 +28,17 @@ toFragment route =
     Page slug ->
       "#pages/" ++ slug
 
-fragmentParser : Navigation.Location -> Result String Route
+fragmentParser : Navigation.Location -> Maybe Route
 fragmentParser location =
-  UrlParser.parse identity routeParser (String.dropLeft 1 location.hash)
+  UrlParser.parseHash routeParser location
 
 routeParser : Parser (Route -> a) a
 routeParser =
   oneOf
-    [ format Home (s "")
-    , format Post (s "posts" </> string)
-    , format Blog (s "posts")
-    , format Review (s "reviews" </> string)
-    , format BookReviews (s "reviews")
-    , format Page (s "pages" </> string)
+    [ UrlParser.map Home (s "")
+    , UrlParser.map Post (s "posts" </> string)
+    , UrlParser.map Blog (s "posts")
+    , UrlParser.map Review (s "reviews" </> string)
+    , UrlParser.map BookReviews (s "reviews")
+    , UrlParser.map Page (s "pages" </> string)
     ]

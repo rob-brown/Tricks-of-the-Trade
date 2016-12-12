@@ -25,7 +25,15 @@ fetchBookReviews page =
     url = ContentfulEndpoint.url (ContentfulEndpoint.BookReviews page)
     decoder = Json.at ["items"] (Json.list BookReview.decode)
   in
-    Task.perform FetchFail FetchBookReviews (Http.get decoder url)
+    Http.get url decoder
+    |> Http.toTask
+    |> Task.attempt (\r ->
+      case r of
+        Ok reviews ->
+          FetchBookReviews reviews
+        Err e ->
+          Debug.log ("API got error: " ++ (toString e))
+          FetchFail e)
 
 fetchBlogPosts : ContentfulEndpoint.Page -> Cmd Msg
 fetchBlogPosts page =
@@ -33,7 +41,15 @@ fetchBlogPosts page =
     url = ContentfulEndpoint.url (ContentfulEndpoint.BlogPosts page)
     decoder = Json.at ["items"] (Json.list BlogPost.decode)
   in
-    Task.perform FetchFail FetchBlogPosts (Http.get decoder url)
+    Http.get url decoder
+    |> Http.toTask
+    |> Task.attempt (\r ->
+      case r of
+        Ok posts ->
+          FetchBlogPosts posts
+        Err e ->
+          Debug.log ("API got error: " ++ (toString e))
+          FetchFail e)
 
 fetchPages : ContentfulEndpoint.Page -> Cmd Msg
 fetchPages page =
@@ -41,4 +57,12 @@ fetchPages page =
     url = ContentfulEndpoint.url (ContentfulEndpoint.Pages page)
     decoder = Json.at ["items"] (Json.list StaticPage.decode)
   in
-    Task.perform FetchFail FetchPages (Http.get decoder url)
+    Http.get url decoder
+    |> Http.toTask
+    |> Task.attempt (\r ->
+      case r of
+        Ok pages ->
+          FetchPages pages
+        Err e ->
+          Debug.log ("API got error: " ++ (toString e))
+          FetchFail e)
