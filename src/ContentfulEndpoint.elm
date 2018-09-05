@@ -32,7 +32,7 @@ host =
 
 limit : String
 limit =
-  "10"
+  "100"
 
 urlInfo : Endpoint -> (String, List (String, String))
 urlInfo endpoint =
