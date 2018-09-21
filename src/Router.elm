@@ -35,7 +35,7 @@ fragmentParser location =
 routeParser : Parser (Route -> a) a
 routeParser =
   oneOf
-    [ UrlParser.map Home (s "")
+    [ UrlParser.map Blog (s "")
     , UrlParser.map Post (s "posts" </> string)
     , UrlParser.map Blog (s "posts")
     , UrlParser.map Review (s "reviews" </> string)

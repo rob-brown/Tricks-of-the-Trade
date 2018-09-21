@@ -38,7 +38,7 @@ init location =
   let
     (posts, postsCmd) = BlogPostList.init
     (reviews, reviewsCmd) = BookReviewList.init
-    initialModel = { posts=posts, reviews=reviews, pages=[], route=Router.Home }
+    initialModel = { posts=posts, reviews=reviews, pages=[], route=Router.Blog }
     route = Router.fragmentParser location
     (model, urlCommands) = urlUpdate route initialModel
     commands =
